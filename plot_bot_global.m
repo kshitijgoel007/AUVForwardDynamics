@@ -1,4 +1,4 @@
-function plot_bot_global(i_main,id,phi,theta,si,Xcm,Ycm,Zcm)
+function plot_bot_global(i_main,id,phi,theta,si,Xcm,Ycm,Zcm,input_data)
 
 R_phi=[1 0 0;0 cos(phi) -sin(phi); 0 sin(phi) cos(phi)];
 R_theta=[cos(theta) 0 sin(theta);0 1 0; -sin(theta) 0 cos(theta)];
@@ -7,9 +7,6 @@ R=R_phi*R_theta*R_si;  %R=ROTATION MATRIX
 poscm=[Xcm;Ycm;Zcm];
 
 if det(R)~=0
-   fname=['Bot_coordiantes','.csv'] ;%LOCAL BOT COORDINATES
-   fid=fopen(fname,'r') ; 
-   input_data = csvread(fname) ;%//////THIS SHUD HAPPEN ONLY ONCE!!!MODIFY
    [row1,col1]=size(input_data) ;
    output_data=zeros(row1,col1);
    
@@ -23,7 +20,7 @@ if det(R)~=0
    
    fname2=['Bot_coordiantes_global_case_',num2str(id,'%0d'),'.csv'] ;
    fid2=fopen(fname2,'a') ;
-   csvwrite(fname2,output_data,0,4*i_main-3);%writing data to different columns!!modify
-   fclose('all') ;
+   csvwrite(fname2,output_data);%writing data to different columns!!modify
+   fclose(fid2) ;
 end
 end

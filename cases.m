@@ -8,7 +8,7 @@ function cases()
 %CASE4:SAME AS CASE 3 WITH DEL_R_ORDERED=-10DEGREE INTIALLY
 %CASE5:AKA CASE3:DEL_R_ORDERED=20DEGREE
 %CASE6:AKA CASE4_2:DEL_R_ORDERED=-20DEGREE
-%CASE7:zig zag pitch motion de
+%CASE7:zig zag pitch motion in vertical plane
 %CASE8:??
 
 
