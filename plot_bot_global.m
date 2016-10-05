@@ -1,15 +1,15 @@
-function plot_bot_global(i_main,id,phi,theta,si,Xcm,Ycm,Zcm)
+function plot_bot_global(fname,phi,theta,si,Xcm,Ycm,Zcm,input_data)
+%function for drawing the bot at different time instants
 
+%R=rotation matrix
 R_phi=[1 0 0;0 cos(phi) -sin(phi); 0 sin(phi) cos(phi)];
 R_theta=[cos(theta) 0 sin(theta);0 1 0; -sin(theta) 0 cos(theta)];
 R_si=[cos(si) -sin(si) 0; sin(si) cos(si) 0;0 0 1];
-R=R_phi*R_theta*R_si;  %R=ROTATION MATRIX
+R=R_phi*R_theta*R_si;  
+
 poscm=[Xcm;Ycm;Zcm];
 
 if det(R)~=0
-   fname=['Bot_coordiantes','.csv'] ;%LOCAL BOT COORDINATES
-   fid=fopen(fname,'r') ; 
-   input_data = csvread(fname) ;%//////THIS SHUD HAPPEN ONLY ONCE!!!MODIFY
    [row1,col1]=size(input_data) ;
    output_data=zeros(row1,col1);
    
@@ -21,9 +21,9 @@ if det(R)~=0
        output_data(i,:)=((inv(R)*temp)+poscm)';
    end
    
-   fname2=['Bot_coordiantes_global_case_',num2str(id,'%0d'),'.csv'] ;
-   fid2=fopen(fname2,'a') ;
-   csvwrite(fname2,output_data,0,4*i_main-3);%writing data to different columns!!modify
-   fclose('all') ;
+fname2=['Global_bot_coordinates_case_',fname,'.csv'] ;
+fid2=fopen(fname2,'a');
+dlmwrite(fname2,output_data,'roffset',1,'coffset',0,'-append');
+fclose(fid2) ;
 end
 end

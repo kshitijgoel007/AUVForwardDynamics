@@ -13,7 +13,7 @@ heavederivatives;
 rollderivatives;
 pitchderivatives;
 yawderivatives;
-%bodyprop = fopen('bodypropdata.txt');
+
 
 %The coefficient matrix is, therefore :
 A = [m - (0.5*rho*(L^3)*surge_deriv(5)), 0, 0, 0, m*zg, -m*yg;
@@ -113,8 +113,8 @@ I=integration2(X);
  
 
 
-% Using ode45
-% We have AX = C
+
+% We have AX_dot = C
 dX = inv(A)*C;
 
 %EULER ANGLE RATES AND GLOBAL POSITION TERMS
@@ -142,6 +142,7 @@ dX(18)=0;
 
 
 %MODELLING RUDDER DEFLECTION
+
 % if(t>=175&&t<=250)
 %    del_o=-15*pi/180;
 % end
@@ -151,6 +152,9 @@ dX(18)=0;
 % else delt=abs(t-Xold(length(X)+1));
 % end   
 % delt=1;
+global del_o;
+global max_rudd_rate;
+global maxrudd;
 
 %checking for the rudder movement resolution
 if(abs(del_o - Del_r) > 10^-5 )
@@ -169,11 +173,9 @@ if(abs(del_o - Del_r) > 10^-5 )
 
      %Assigning the rudder angle limit 
      if (Del_r >= maxrudd) 
-         Del_r=maxrudd;
          dX(16) = 0;
      elseif (Del_r <= (-maxrudd))
-              Del_r=(-maxrudd);
-              dX(16) = 0;
+         dX(16) = 0;
      end    
      %Assigned the rudder angle limit
 
