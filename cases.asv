@@ -19,25 +19,17 @@ input_data = csvread(fname1);
 fclose(fid);
 
 n=8;%TOTAL NO OF CASES
- 
+%Y=solution vector 
 
-for i=2:n
+for i=1:n
 fname=num2str(i,'%0d') ;
-euler(fname,input_data);
+Y(i)=euler(fname,input_data);
 end
 
 %code for taking input from user
-% prompt = 'input case no(input 0 to quit):';
-% x = input(prompt);
-% while(x)
-%     fname=num2str(X,'%0d') ;
-%     Y(i)=euler(fname,input_data);
-%     prompt = 'input case no(input 0 to quit):';
-%     x = input(prompt);
-
-%end
-
-
+prompt = 'What is the original value? ';
+x = input(prompt)
+y = x*10
 
 
 end

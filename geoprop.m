@@ -1,4 +1,4 @@
-global W B L Ix Iy Iz Ixy Iyz Ixz Iyx Izy Izx xg x_b yg y_b zg z_b rho m g maxrudd max_rudd_rate del_o Xold;
+global W B L Ix Iy Iz Ixy Iyz Ixz Iyx Izy Izx xg x_b yg y_b zg z_b rho m g ;
 W = 53400;
 B = 53400;
 L = 5.3;
@@ -20,10 +20,6 @@ z_b = 0;
 rho = 1000;
 m = 5454.54;
 g = 9.81;
-
-%SOME ADDN PARAMETERS FOR CONTROL SURFACE DEFLECTION
-
-maxrudd=35*pi/180;
-max_rudd_rate=2.5*pi/180;
-del_o=0;
 dt=.1;
+
+

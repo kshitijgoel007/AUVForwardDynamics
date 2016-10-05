@@ -158,13 +158,13 @@ del_o=10*pi/180.0;
        plot_bot_global(fname,X(10),X(11),X(12),X(7),X(8),X(9),input_data);
        
    end
-   end
+    end
     %BOT COORDINATES UPDATED AND SAVED
     
     
     figure;
     plot(Y(:,8),Y(:,9));
-    legend('case 4');
+    legend('case 2');
     
 
    %///////////////////////////////////////////////////////////////////
@@ -180,7 +180,7 @@ del_o=10*pi/180.0;
         for j=1:length(X)
         Y(i,j+1)=X(j);
         end
-    
+    end
     %EULER METHOD IMPLEMENTED
 
     if (X(12)>20*pi/180.0) 
@@ -190,20 +190,18 @@ del_o=10*pi/180.0;
         end
     end
     
+   figure;
+   plot(Y(:,8),Y(:,9)); 
+   legend('case 5');
    %UPDATING BOT COORDINATES AND SAVING IN FILE
    %UPDATE COORDINATES EVERY 10 SECONDS
    if rem(t(i),10)==0|| i==2   
        plot_bot_global(fname,X(10),X(11),X(12),X(7),X(8),X(9),input_data);
        
    end
-   end
-    %BOT COORDINATES UPDATED AND SAVED
+   %BOT COORDINATES UPDATED AND SAVED
 
 
-    figure;
-    plot(Y(:,8),Y(:,9));
-    legend('case 5');
-    
    %///////////////////////////////////////////////////////////////////
 
 case {'6'}
@@ -218,7 +216,7 @@ del_o=20*pi/180.0;
         for j=1:length(X)
         Y(i,j+1)=X(j);
         end
-    
+    end
     %EULER METHOD IMPLEMENTED
 
     if (X(12)<-20*pi/180.0) 
@@ -228,20 +226,18 @@ del_o=20*pi/180.0;
         end
     end
     
-   
+   figure;
+   plot(Y(:,8),Y(:,9));
+   legend('case 6');
+  
    %UPDATING BOT COORDINATES AND SAVING IN FILE
    %UPDATE COORDINATES EVERY 10 SECONDS
    if rem(t(i),10)==0|| i==2   
        plot_bot_global(fname,X(10),X(11),X(12),X(7),X(8),X(9),input_data);
        
    end
-   end
    %BOT COORDINATES UPDATED AND SAVED
 
-    figure;
-    plot(Y(:,8),Y(:,9));
-    legend('case 6');
-    
 
    %///////////////////////////////////////////////////////////////////
 
