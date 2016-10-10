@@ -155,6 +155,9 @@ dX(18)=0;
 global del_o;
 global max_rudd_rate;
 global maxrudd;
+global del_st;
+global max_st_rate;
+global maxst;
 
 %checking for the rudder movement resolution
 if(abs(del_o - Del_r) > 10^-5 )
@@ -181,6 +184,35 @@ if(abs(del_o - Del_r) > 10^-5 )
 
  elseif(abs(del_o - Del_r) <= 10^-5)    
         dX(16) = 0;
+end
+
+%checking for the stern movement resolution
+if(abs(del_st - Del_s) > 10^-5 )
+     %checking for the maximum rudder rate
+     actual_del_rate_s = abs(del_st - Del_s) /dt  ;
+     if(actual_del_rate_s >= max_st_rate)
+        dX(13) = max_st_rate;
+     else    
+        dX(13) = actual_del_rate_s;
+     end
+     %checked and assigned the maximum stern rate
+
+     %Assigning the direction of rotation 
+     dX(13) = dX(13)*abs(del_st - Del_s) / (del_st - Del_s);
+     %Assigned the direction of rotation
+
+     %Assigning the rudder angle limit 
+     if (Del_s >= maxst) 
+         Del_s=maxst;
+         dX(13) = 0;
+     elseif (Del_s <= (-maxst))
+              Del_s=(-maxst);
+              dX(13) = 0;
+     end    
+     %Assigned the stern angle limit
+
+ elseif(abs(del_st - Del_s) <= 10^-5)    
+        dX(13) = 0;
 end
 
 %STORING THE PRESENT VALUES IN Xold
