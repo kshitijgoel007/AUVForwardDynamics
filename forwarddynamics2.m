@@ -158,6 +158,12 @@ global maxrudd;
 global del_st;
 global max_st_rate;
 global maxst;
+global del_bp;
+global max_bp_rate;
+global maxbp;
+global del_bs;
+global max_bs_rate;
+global maxbs;
 
 %checking for the rudder movement resolution
 if(abs(del_o - Del_r) > 10^-5 )
@@ -203,10 +209,10 @@ if(abs(del_st - Del_s) > 10^-5 )
 
      %Assigning the rudder angle limit 
      if (Del_s >= maxst) 
-         Del_s=maxst;
+         %Del_s=maxst;
          dX(13) = 0;
      elseif (Del_s <= (-maxst))
-              Del_s=(-maxst);
+          %    Del_s=(-maxst);
               dX(13) = 0;
      end    
      %Assigned the stern angle limit
@@ -214,7 +220,64 @@ if(abs(del_st - Del_s) > 10^-5 )
  elseif(abs(del_st - Del_s) <= 10^-5)    
         dX(13) = 0;
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if(abs(del_bp - Del_bp) > 10^-5 )
+     %checking for the maximum rudder rate
+     actual_del_rate_s = abs(del_bp - Del_bp) /dt  ;
+     if(actual_del_rate_s >= max_bp_rate)
+        dX(14) = max_bp_rate;
+     else    
+        dX(14) = actual_del_rate_s;
+     end
+     %checked and assigned the maximum stern rate
 
+     %Assigning the direction of rotation 
+     dX(14) = dX(14)*abs(del_bp - Del_bp) / (del_bp - Del_bp);
+     %Assigned the direction of rotation
+
+     %Assigning the rudder angle limit 
+     if (Del_bp >= maxbp) 
+         Del_bp=maxbp;
+         dX(14) = 0;
+     elseif (Del_bp <= (-maxbp))
+              Del_bp=(-maxbp);
+              dX(14) = 0;
+     end    
+     %Assigned the stern angle limit
+
+ elseif(abs(del_bp - Del_bp) <= 10^-5)    
+        dX(14) = 0;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if(abs(del_bs - Del_bs) > 10^-5 )
+     %checking for the maximum rudder rate
+     actual_del_rate_s = abs(del_bs - Del_bs) /dt  ;
+     if(actual_del_rate_s >= max_bs_rate)
+        dX(15) = max_bs_rate;
+     else    
+        dX(15) = actual_del_rate_s;
+     end
+     %checked and assigned the maximum stern rate
+
+     %Assigning the direction of rotation 
+     dX(15) = dX(15)*abs(del_bs - Del_bs) / (del_bs - Del_bs);
+     %Assigned the direction of rotation
+
+     %Assigning the rudder angle limit 
+     if (Del_bs >= maxbs) 
+         Del_bs=maxbs;
+         dX(15) = 0;
+     elseif (Del_bs <= (-maxbs))
+              Del_bs=(-maxbs);
+              dX(15) = 0;
+     end    
+     %Assigned the stern angle limit
+
+ elseif(abs(del_bs - Del_bs) <= 10^-5)    
+        dX(15) = 0;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %STORING THE PRESENT VALUES IN Xold
 %  Xold=X;
 %  Xold(length(X)+1)=t;

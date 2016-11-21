@@ -1,6 +1,6 @@
 %script for testing zig-zag
 function zigzag()
-
+close all;
 t=0:.1:50;
 dt=.1;
 global Y;
@@ -20,7 +20,7 @@ end
 %disp(del_o);
 %implementing zig-zag
 global del_o;
-del_o=-10*pi/180.0;
+del_o=-5*pi/180.0;
 
 
    for i=2:length(t)
@@ -34,13 +34,22 @@ del_o=-10*pi/180.0;
     end
     %EULER METHOD IMPLEMENTED 
     %bot will turn opposite to rudder deflection
-    if (X(12)>10*pi/180.0) 
-       del_o=10*pi/180.0;
-    else if (X(12)<-10*pi/180.0)
-       del_o=-10*pi/180.0;    
+    if (X(12)>5*pi/180.0) 
+       %del_o=10*pi/180.0;
+       del_o=0;
+    else if (X(12)<-5*pi/180.0)
+       del_o=-5*pi/180.0;    
         end
     end
    end 
+   r2d = 180/pi;
    disp(Y(:,13));
-   plot(Y(:,8),Y(:,9)); 
+   figure(1);
+   plot(t,Y(:,17));xlabel('time');ylabel('Actual deflection of rudder');   
+
+   figure(2);
+   plot(t, Y(:,13)*r2d);xlabel('time');ylabel('Yaw');
+
+   %figure(4);
+   %plot(Y(:,8),Y(:,9));
 end

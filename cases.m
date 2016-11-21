@@ -20,11 +20,11 @@ fclose(fid);
 
 n=8;%TOTAL NO OF CASES
  
-
-for i=2:n
+i=5;
+%for i=2:n
 fname=num2str(i,'%0d') ;
 euler(fname,input_data);
-end
+%end
 
 %code for taking input from user
 % prompt = 'input case no(input 0 to quit):';

@@ -18,7 +18,8 @@ if det(R)~=0
        temp(2,1)=input_data(i,2);
        temp(3,1)=input_data(i,3);
        
-       output_data(i,:)=((inv(R)*temp)+poscm)';
+       %output_data(i,:)=((inv(R)*temp)+poscm)';
+       output_data(i,:)=(temp+poscm)';
    end
    
 fname2=['Global_bot_coordinates_case_',fname,'.csv'] ;
