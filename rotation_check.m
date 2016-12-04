@@ -1,5 +1,11 @@
-function plot_bot_global(fname,phi,theta,si,Xcm,Ycm,Zcm,input_data)
+function rotation_check(phi,theta,si,Xcm,Ycm,Zcm)
 %function for drawing the bot at different time instants
+fname1=['Bot_coordiantes','.csv'] ;
+fid=fopen(fname1,'r') ; 
+input_data = csvread(fname1);
+fclose(fid);
+
+%input_data=draw_rectangle();
 
 %R=rotation matrix
 R=[cos(si)*cos(theta) -sin(si)*cos(phi)+cos(si)*sin(theta)*sin(phi) sin(si)*sin(phi)+cos(si)*cos(phi)*sin(theta);
@@ -8,7 +14,7 @@ R=[cos(si)*cos(theta) -sin(si)*cos(phi)+cos(si)*sin(theta)*sin(phi) sin(si)*sin(
 
 poscm=[Xcm;Ycm;Zcm];
 
-
+%if det(R)~=0
    [row1,col1]=size(input_data) ;
    output_data=zeros(row1,col1);
    
@@ -17,11 +23,16 @@ poscm=[Xcm;Ycm;Zcm];
        temp(2,1)=input_data(i,2);
        temp(3,1)=input_data(i,3);
        
-       output_data(i,:)=(R*temp+poscm)';
+       output_data(i,:)=((R*temp)+poscm)';
+
    end
-   
-fname2=['Global_bot_coordinates_case_',fname,'.csv'] ;
-fid2=fopen(fname2,'a');
-dlmwrite(fname2,output_data,'roffset',1,'coffset',0,'-append');
-fclose(fid2) ;
+figure;
+scatter(output_data(:,1),output_data(:,2));
+xlim([-10 10]);
+ylim([-10,10]);
+grid;
+% fname2=['test_rotation','.csv'] ;
+% fid2=fopen(fname2,'w+');
+% dlmwrite(fname2,output_data);
+% fclose(fid2) ;
 end
