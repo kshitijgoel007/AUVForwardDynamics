@@ -3,7 +3,7 @@
 function Y=euler(fname,input_data)
 %fname=case no to be run
 %input_dta=bot coordinates in body frame
-t=0:.1:500;
+t=0:.1:30;
 dt=.1;
 
 
@@ -28,7 +28,8 @@ global del_o;
 switch fname
 
     case {'1'}
-  
+    %when del_o is positive, bot turns to port(-Y initially points to port
+    %also si is -ve.
     del_o=10*pi/180.0;
     for i=2:length(t)
         %SOLVING USING EULER METHOD
@@ -168,6 +169,8 @@ del_o=10*pi/180.0;
     
 
    %///////////////////////////////////////////////////////////////////
+    %rudder deflection to port side -ve
+    
     case {'5'}
     del_o=-20*pi/180.0;
     
@@ -192,7 +195,7 @@ del_o=10*pi/180.0;
     
    %UPDATING BOT COORDINATES AND SAVING IN FILE
    %UPDATE COORDINATES EVERY 10 SECONDS
-   if rem(t(i),10)==0|| i==2   
+   if rem(t(i),5)==0|| i==2   
        plot_bot_global(fname,X(10),X(11),X(12),X(7),X(8),X(9),input_data);
        
    end
@@ -200,10 +203,10 @@ del_o=10*pi/180.0;
     %BOT COORDINATES UPDATED AND SAVED
 
 
-    figure;
-    plot(Y(:,8),Y(:,9));
-    legend('case 5');
-    
+%     figure;
+%     plot(Y(:,8),Y(:,9));
+%     legend('case 5');
+%     
    %///////////////////////////////////////////////////////////////////
 
 case {'6'}

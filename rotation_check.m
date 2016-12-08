@@ -1,9 +1,5 @@
-function rotation_check(phi,theta,si,Xcm,Ycm,Zcm)
+function output_data=rotation_check(phi,theta,si,poscm,input_data)
 %function for drawing the bot at different time instants
-fname1=['Bot_coordiantes','.csv'] ;
-fid=fopen(fname1,'r') ; 
-input_data = csvread(fname1);
-fclose(fid);
 
 %input_data=draw_rectangle();
 
@@ -12,7 +8,7 @@ R=[cos(si)*cos(theta) -sin(si)*cos(phi)+cos(si)*sin(theta)*sin(phi) sin(si)*sin(
    sin(si)*cos(theta) cos(si)*cos(phi)+sin(phi)*sin(theta)*sin(si) -cos(si)*sin(phi)+sin(theta)*sin(si)*cos(phi);
   -sin(theta)         cos(theta)*sin(phi)                          cos(theta)*cos(phi)                         ;];
 
-poscm=[Xcm;Ycm;Zcm];
+
 
 %if det(R)~=0
    [row1,col1]=size(input_data) ;
@@ -26,11 +22,12 @@ poscm=[Xcm;Ycm;Zcm];
        output_data(i,:)=((R*temp)+poscm)';
 
    end
-figure;
+
 scatter(output_data(:,1),output_data(:,2));
-xlim([-10 10]);
-ylim([-10,10]);
+xlim([-40 40]);
+ylim([-20,20]);
 grid;
+hold on;
 % fname2=['test_rotation','.csv'] ;
 % fid2=fopen(fname2,'w+');
 % dlmwrite(fname2,output_data);

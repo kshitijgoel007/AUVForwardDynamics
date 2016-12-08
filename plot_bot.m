@@ -1,3 +1,4 @@
+%scrpit for generating coordinates of a bot for visualisation purposes
 n=0;
 
 for i=-2:.2:2
