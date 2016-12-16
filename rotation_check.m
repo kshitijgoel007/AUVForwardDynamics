@@ -1,4 +1,4 @@
-function output_data=rotation_check(phi,theta,si,poscm,input_data)
+function rotation_check(phi,theta,si,poscm,input_data)
 %function for drawing the bot at different time instants
 
 %input_data=draw_rectangle();
@@ -19,12 +19,14 @@ R=[cos(si)*cos(theta) -sin(si)*cos(phi)+cos(si)*sin(theta)*sin(phi) sin(si)*sin(
        temp(2,1)=input_data(i,2);
        temp(3,1)=input_data(i,3);
        
-       output_data(i,:)=((R*temp)+poscm)';
-
+       temp1=((R*temp)+poscm);
+       output_data(i,1)=temp1(1,1);
+       output_data(i,2)=temp1(2,1);
+       output_data(i,3)=temp1(3,1);  
    end
 
 scatter(output_data(:,1),output_data(:,2));
-xlim([-40 40]);
+xlim([-20 20]);
 ylim([-20,20]);
 grid;
 hold on;
