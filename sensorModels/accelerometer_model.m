@@ -26,6 +26,10 @@ d = [(accelerometer_location(1) -  r_cg(1));
  
 Aimeas = Acc_true + cross(wb,cross(wb,d)) + cross(wb_dot,d);
 
+
+% Tranform Aimeas to IMU frame.
+
+
 % Accelerometer random walk signal %
 % accelerometer_sig_beta = acceleration_random_walk*sqrt(tinc);
 % accelerometer_beta += acceleration_sig_beta*randn(3,1);

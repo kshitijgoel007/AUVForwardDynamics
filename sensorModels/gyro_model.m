@@ -11,6 +11,8 @@ global gyro_corr_time;
 % convert wb from [rad/s] to [deg/s]
 wb = wb*180*(1/3.14);
 
+% transform wb to IMU frame.
+
 % Gyroscope random walk signal %
 % gyroscope_sig_beta = gyroscope_random_walk*sqrt(tinc);
 % gyroscope_bias += gyroscope_sig_beta*randn(3,1);
