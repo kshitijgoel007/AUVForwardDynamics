@@ -7,7 +7,7 @@
 % Function containing 6DOF equations of bot, global coordinates, euler
 % angles and control surface deflections in the form (A)(dX)=C;
 % 
-%t : time array specifying the time instants for which the equations have to
+% t : time array specifying the time instants for which the equations have to
 %     be solved
 % X : 18X1 state vector
 %     u = X(1);
@@ -28,20 +28,25 @@
 %     Del_r = X(16);  %rudder deflection
 %     Del_delb = X(17);%change in buoyancy
 %     Del_sn = X(18); %change in propeller RPM
+
 % INPUT:time t
 %       array X at t=0
-%       orderedControlSurfaceDeflectionArray
-% orderedDeflectionsArray(1)=del_ordered_rudder
-% orderedDeflectionsArray(2)=del_ordered_stern
-% orderedDeflectionsArray(3)=del_ordered_bp
-% orderedDeflectionsArray(4)=del_ordered_bs
-
-
+%       ord_defl
+%       caseNo
+% ord_defl(1)=del_ordered_rudder
+% ord_defl(2)=del_ordered_stern
+% ord_defl(3)=del_ordered_bp
+% ord_defl(4)=del_ordered_bs
 % OUTPUT:dX
 % function dX = forwarddynamics2(t, X)             
 
-function dX = forwarddynamics2(t, X,orderedControlSurfaceDeflectionArray)              
 
+function dX = forwarddynamics2(t, X,ord_defl,caseNo)              
+
+
+addpath('actuator dynamics');
+addpath('utils');
+addpath('PDcontrol');
 
 % Files containing bot properties
 geoprop;
@@ -170,7 +175,8 @@ dX(11) = q*cos(phi)-r*sin(phi);
 dX(12) = (q*sin(phi)+r*cos(phi))/cos(theta);
 
 
-% MODELLING CONTROL SURFACE DEFLECTION
+% Actuator dynamics
+
 dX(13)=0;
 dX(14)=0;
 dX(15)=0;
@@ -178,168 +184,25 @@ dX(16)=0;
 dX(17)=0;
 dX(18)=0;
 
-global max_rudd_rate;
-global maxrudd;
-
-global max_st_rate;
-global maxst;
-
-global max_bp_rate;
-global maxbp;
-
-global max_bs_rate;
-global maxbs;
-
-
-%MODELLING RUDDER DEFLECTION FOR TRACKING CONTROL USING PD CONTROLLER
-  U = 1;
-  TE =2.5;%sec
-  a = 1;
-  b = 1.5*L/U;
-  
-  if abs(Del_r)>maxrudd
-      Del_r = maxrudd*(Del_r/abs(Del_r));
-  end
-  
-  dX(16) = (-Del_r +a*psi +b*r)/TE;
-
-  if(abs(dX(16))>= max_rudd_rate)
-   dX(16) = max_rudd_rate;
-   
-  end
-    
-
-% % MODELLING RUDDER DEFLECTION
-
-
 syms del_o del_st del_bp del_bs;
-% del_o = orderedControlSurfaceDeflectionArray(1);
-% del_st = orderedControlSurfaceDeflectionArray(2);
-% del_bp = orderedControlSurfaceDeflectionArray(3);
-% del_bs = orderedControlSurfaceDeflectionArray(4);
+del_o = ord_defl(1);
+del_st = ord_defl(2);
+del_bp = ord_defl(3);
+del_bs = ord_defl(4);
+
+switch caseNo    
+
+    case {'1','2','3','4','5','6'}
+          dX(16) = rudderdynamics(Del_r,del_o);
+    
+    case {'7', '8'}
+          dX(13) = sternDynamics(Del_s, del_st);
+          
+    case{'9'}
+        dX(16) = surgePDcontrol(Del_r);
+end
 
 
-% % Checking for the rudder movement resolution
-% if(abs(del_o - Del_r) > 10^-5 )
-%      
-%      %checking for the maximum rudder deflection rate
-%      actual_del_rate_s = abs(del_o - Del_r) /dt  ;
-%      
-%      if(actual_del_rate_s >= max_rudd_rate)
-%         dX(16) = max_rudd_rate;
-%      else    
-%         dX(16) = actual_del_rate_s;
-%      end
-%      % Checked and assigned  rudder rate
-% 
-%      % Assigning the direction of rotation 
-%      dX(16) = dX(16)*abs(del_o - Del_r) / (del_o - Del_r);
-%      % Assigned the direction of rotation
-% 
-%      %Assigning the rudder angle limit 
-%      if (Del_r >= maxrudd) 
-%          dX(16) = 0;
-%      elseif (Del_r <= (-maxrudd))
-%          dX(16) = 0;
-%      end    
-%      % Assigned the rudder angle limit
-% 
-%  elseif(abs(del_o - Del_r) <= 10^-5)    
-%         dX(16) = 0;
-% end
-% % 
-% % 
-% % %MODELLING STERN DEFLECTION
-% % Checking for the stern movement resolution
-% if(abs(del_st - Del_s) > 10^-5 )
-%      
-%      %Checking for the maximum stern deflection rate
-%      actual_del_rate_s = abs(del_st - Del_s) /dt  ;
-%      
-%      if(actual_del_rate_s >= max_st_rate)
-%         dX(13) = max_st_rate;
-%      else    
-%         dX(13) = actual_del_rate_s;
-%      end
-%      % Checked and assigned the maximum stern deflection rate
-% 
-%      % Assigning the direction of rotation 
-%      dX(13) = dX(13)*abs(del_st - Del_s) / (del_st - Del_s);
-%      % Assigned the direction of rotation
-% 
-%      %Assigning the stern angle limit 
-%      if (Del_s >= maxst) 
-%          dX(13) = 0;
-%      elseif (Del_s <= (-maxst))
-%          dX(13) = 0;
-%      end    
-%      % Assigned the stern angle limit
-% 
-%  elseif(abs(del_st - Del_s) <= 10^-5)    
-%         dX(13) = 0;
-% end
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
-% 
-% %MODELLING PORT BOW DEFLECTION
-% if(abs(del_bp - Del_bp) > 10^-5 )
-%      
-%      %Checking for the maximum bowplane deflection rate
-%      actual_del_rate_s = abs(del_bp - Del_bp) /dt  ;
-%      
-%      if(actual_del_rate_s >= max_bp_rate)
-%         dX(14) = max_bp_rate;
-%      else    
-%         dX(14) = actual_del_rate_s;
-%      end
-%      %Checked and assigned the maximum stern rate
-% 
-%      %Assigning the direction of rotation 
-%      dX(14) = dX(14)*abs(del_bp - Del_bp) / (del_bp - Del_bp);
-%      %Assigned the direction of rotation
-% 
-%      %Assigning the bowplane angle limit 
-%      if (Del_bp >= maxbp) 
-%          dX(14) = 0;
-%      elseif (Del_bp <= (-maxbp))
-%               dX(14) = 0;
-%      end    
-%      %Assigned the bowplane angle limit
-% 
-%  elseif(abs(del_bp - Del_bp) <= 10^-5)    
-%         dX(14) = 0;
-% end
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
-% % MODELLING STARBOARD BOW DEFLECTION
-%   if(abs(del_bs - Del_bs) > 10^-5 )
-%      
-%      % Checking for the maximum rudder rate
-%      actual_del_rate_s = abs(del_bs - Del_bs) /dt  ;
-%      if(actual_del_rate_s >= max_bs_rate)
-%         dX(15) = max_bs_rate;
-%      else    
-%         dX(15) = actual_del_rate_s;
-%      end
-%      % Checked and assigned the maximum bow deflection rate
-% 
-%      % Assigning the direction of rotation 
-%      dX(15) = dX(15)*abs(del_bs - Del_bs) / (del_bs - Del_bs);
-%      % Assigned the direction of rotation
-% 
-%      % Assigning the bow angle limit 
-%      if (Del_bs >= maxbs) 
-%          dX(15) = 0;
-%      elseif (Del_bs <= (-maxbs))
-%               dX(15) = 0;
-%      end    
-%      %Assigned the bow angle limit
-% 
-%  elseif(abs(del_bs - Del_bs) <= 10^-5)    
-%         dX(15) = 0;
-%  end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %STORING THE PRESENT VALUES IN Xold
@@ -438,6 +301,7 @@ syms del_o del_st del_bp del_bs;
 %  fclose(fid);
 %  end
 % fclose('all'); 
+
 disp(t);
  
 
