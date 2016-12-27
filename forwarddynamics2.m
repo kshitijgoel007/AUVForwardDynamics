@@ -178,9 +178,6 @@ dX(16)=0;
 dX(17)=0;
 dX(18)=0;
 
-
-% MODELLING RUDDER DEFLECTION
-
 global max_rudd_rate;
 global maxrudd;
 
@@ -193,133 +190,155 @@ global maxbp;
 global max_bs_rate;
 global maxbs;
 
+
+%MODELLING RUDDER DEFLECTION FOR TRACKING CONTROL USING PD CONTROLLER
+  U = 1;
+  TE =2.5;%sec
+  a = 1;
+  b = 1.5*L/U;
+  
+  if abs(Del_r)>maxrudd
+      Del_r = maxrudd*(Del_r/abs(Del_r));
+  end
+  
+  dX(16) = (-Del_r +a*psi +b*r)/TE;
+
+  if(abs(dX(16))>= max_rudd_rate)
+   dX(16) = max_rudd_rate;
+   
+  end
+    
+
+% % MODELLING RUDDER DEFLECTION
+
+
 syms del_o del_st del_bp del_bs;
-del_o = orderedControlSurfaceDeflectionArray(1);
-del_st = orderedControlSurfaceDeflectionArray(2);
-del_bp = orderedControlSurfaceDeflectionArray(3);
-del_bs = orderedControlSurfaceDeflectionArray(4);
+% del_o = orderedControlSurfaceDeflectionArray(1);
+% del_st = orderedControlSurfaceDeflectionArray(2);
+% del_bp = orderedControlSurfaceDeflectionArray(3);
+% del_bs = orderedControlSurfaceDeflectionArray(4);
 
 
-% Checking for the rudder movement resolution
-if(abs(del_o - Del_r) > 10^-5 )
-     
-     %checking for the maximum rudder deflection rate
-     actual_del_rate_s = abs(del_o - Del_r) /dt  ;
-     
-     if(actual_del_rate_s >= max_rudd_rate)
-        dX(16) = max_rudd_rate;
-     else    
-        dX(16) = actual_del_rate_s;
-     end
-     % Checked and assigned  rudder rate
-
-     % Assigning the direction of rotation 
-     dX(16) = dX(16)*abs(del_o - Del_r) / (del_o - Del_r);
-     % Assigned the direction of rotation
-
-     %Assigning the rudder angle limit 
-     if (Del_r >= maxrudd) 
-         dX(16) = 0;
-     elseif (Del_r <= (-maxrudd))
-         dX(16) = 0;
-     end    
-     % Assigned the rudder angle limit
-
- elseif(abs(del_o - Del_r) <= 10^-5)    
-        dX(16) = 0;
-end
-
-
-%MODELLING STERN DEFLECTION
-% Checking for the stern movement resolution
-if(abs(del_st - Del_s) > 10^-5 )
-     
-     %Checking for the maximum stern deflection rate
-     actual_del_rate_s = abs(del_st - Del_s) /dt  ;
-     
-     if(actual_del_rate_s >= max_st_rate)
-        dX(13) = max_st_rate;
-     else    
-        dX(13) = actual_del_rate_s;
-     end
-     % Checked and assigned the maximum stern deflection rate
-
-     % Assigning the direction of rotation 
-     dX(13) = dX(13)*abs(del_st - Del_s) / (del_st - Del_s);
-     % Assigned the direction of rotation
-
-     %Assigning the stern angle limit 
-     if (Del_s >= maxst) 
-         dX(13) = 0;
-     elseif (Del_s <= (-maxst))
-         dX(13) = 0;
-     end    
-     % Assigned the stern angle limit
-
- elseif(abs(del_st - Del_s) <= 10^-5)    
-        dX(13) = 0;
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%MODELLING PORT BOW DEFLECTION
-if(abs(del_bp - Del_bp) > 10^-5 )
-     
-     %Checking for the maximum bowplane deflection rate
-     actual_del_rate_s = abs(del_bp - Del_bp) /dt  ;
-     
-     if(actual_del_rate_s >= max_bp_rate)
-        dX(14) = max_bp_rate;
-     else    
-        dX(14) = actual_del_rate_s;
-     end
-     %Checked and assigned the maximum stern rate
-
-     %Assigning the direction of rotation 
-     dX(14) = dX(14)*abs(del_bp - Del_bp) / (del_bp - Del_bp);
-     %Assigned the direction of rotation
-
-     %Assigning the bowplane angle limit 
-     if (Del_bp >= maxbp) 
-         dX(14) = 0;
-     elseif (Del_bp <= (-maxbp))
-              dX(14) = 0;
-     end    
-     %Assigned the bowplane angle limit
-
- elseif(abs(del_bp - Del_bp) <= 10^-5)    
-        dX(14) = 0;
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% MODELLING STARBOARD BOW DEFLECTION
-  if(abs(del_bs - Del_bs) > 10^-5 )
-     
-     % Checking for the maximum rudder rate
-     actual_del_rate_s = abs(del_bs - Del_bs) /dt  ;
-     if(actual_del_rate_s >= max_bs_rate)
-        dX(15) = max_bs_rate;
-     else    
-        dX(15) = actual_del_rate_s;
-     end
-     % Checked and assigned the maximum bow deflection rate
-
-     % Assigning the direction of rotation 
-     dX(15) = dX(15)*abs(del_bs - Del_bs) / (del_bs - Del_bs);
-     % Assigned the direction of rotation
-
-     % Assigning the bow angle limit 
-     if (Del_bs >= maxbs) 
-         dX(15) = 0;
-     elseif (Del_bs <= (-maxbs))
-              dX(15) = 0;
-     end    
-     %Assigned the bow angle limit
-
- elseif(abs(del_bs - Del_bs) <= 10^-5)    
-        dX(15) = 0;
- end
+% % Checking for the rudder movement resolution
+% if(abs(del_o - Del_r) > 10^-5 )
+%      
+%      %checking for the maximum rudder deflection rate
+%      actual_del_rate_s = abs(del_o - Del_r) /dt  ;
+%      
+%      if(actual_del_rate_s >= max_rudd_rate)
+%         dX(16) = max_rudd_rate;
+%      else    
+%         dX(16) = actual_del_rate_s;
+%      end
+%      % Checked and assigned  rudder rate
+% 
+%      % Assigning the direction of rotation 
+%      dX(16) = dX(16)*abs(del_o - Del_r) / (del_o - Del_r);
+%      % Assigned the direction of rotation
+% 
+%      %Assigning the rudder angle limit 
+%      if (Del_r >= maxrudd) 
+%          dX(16) = 0;
+%      elseif (Del_r <= (-maxrudd))
+%          dX(16) = 0;
+%      end    
+%      % Assigned the rudder angle limit
+% 
+%  elseif(abs(del_o - Del_r) <= 10^-5)    
+%         dX(16) = 0;
+% end
+% % 
+% % 
+% % %MODELLING STERN DEFLECTION
+% % Checking for the stern movement resolution
+% if(abs(del_st - Del_s) > 10^-5 )
+%      
+%      %Checking for the maximum stern deflection rate
+%      actual_del_rate_s = abs(del_st - Del_s) /dt  ;
+%      
+%      if(actual_del_rate_s >= max_st_rate)
+%         dX(13) = max_st_rate;
+%      else    
+%         dX(13) = actual_del_rate_s;
+%      end
+%      % Checked and assigned the maximum stern deflection rate
+% 
+%      % Assigning the direction of rotation 
+%      dX(13) = dX(13)*abs(del_st - Del_s) / (del_st - Del_s);
+%      % Assigned the direction of rotation
+% 
+%      %Assigning the stern angle limit 
+%      if (Del_s >= maxst) 
+%          dX(13) = 0;
+%      elseif (Del_s <= (-maxst))
+%          dX(13) = 0;
+%      end    
+%      % Assigned the stern angle limit
+% 
+%  elseif(abs(del_st - Del_s) <= 10^-5)    
+%         dX(13) = 0;
+% end
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% %MODELLING PORT BOW DEFLECTION
+% if(abs(del_bp - Del_bp) > 10^-5 )
+%      
+%      %Checking for the maximum bowplane deflection rate
+%      actual_del_rate_s = abs(del_bp - Del_bp) /dt  ;
+%      
+%      if(actual_del_rate_s >= max_bp_rate)
+%         dX(14) = max_bp_rate;
+%      else    
+%         dX(14) = actual_del_rate_s;
+%      end
+%      %Checked and assigned the maximum stern rate
+% 
+%      %Assigning the direction of rotation 
+%      dX(14) = dX(14)*abs(del_bp - Del_bp) / (del_bp - Del_bp);
+%      %Assigned the direction of rotation
+% 
+%      %Assigning the bowplane angle limit 
+%      if (Del_bp >= maxbp) 
+%          dX(14) = 0;
+%      elseif (Del_bp <= (-maxbp))
+%               dX(14) = 0;
+%      end    
+%      %Assigned the bowplane angle limit
+% 
+%  elseif(abs(del_bp - Del_bp) <= 10^-5)    
+%         dX(14) = 0;
+% end
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% % MODELLING STARBOARD BOW DEFLECTION
+%   if(abs(del_bs - Del_bs) > 10^-5 )
+%      
+%      % Checking for the maximum rudder rate
+%      actual_del_rate_s = abs(del_bs - Del_bs) /dt  ;
+%      if(actual_del_rate_s >= max_bs_rate)
+%         dX(15) = max_bs_rate;
+%      else    
+%         dX(15) = actual_del_rate_s;
+%      end
+%      % Checked and assigned the maximum bow deflection rate
+% 
+%      % Assigning the direction of rotation 
+%      dX(15) = dX(15)*abs(del_bs - Del_bs) / (del_bs - Del_bs);
+%      % Assigned the direction of rotation
+% 
+%      % Assigning the bow angle limit 
+%      if (Del_bs >= maxbs) 
+%          dX(15) = 0;
+%      elseif (Del_bs <= (-maxbs))
+%               dX(15) = 0;
+%      end    
+%      %Assigned the bow angle limit
+% 
+%  elseif(abs(del_bs - Del_bs) <= 10^-5)    
+%         dX(15) = 0;
+%  end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
