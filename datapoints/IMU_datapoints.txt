@@ -1,5 +1,5 @@
-accelerometer_location = [0; 0; 0] *1e-3; % [m]
-r_cg = [0; 0; 0] *1e-3; %[m]
+accelerometer_location = [-70; -70; -10] *1e-3; % [m]
+r_cg = [-3.3; 0; 555.9] *1e-3; %[m]
 IMU_Accelerometer_SF_MA = [ 0  0  0
                             0  0  0
                             0  0  0];

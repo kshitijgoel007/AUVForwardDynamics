@@ -19,6 +19,8 @@ global accelerometer_bias_instability;
 global IMU_Accelerometer_SF_MA;
 global accelerometer_VRW;
 global accel_corr_time;
+global IMU_to_body;
+% global accelerometer_noise_density;
 
 d = [(accelerometer_location(1) -  r_cg(1));
      (accelerometer_location(2) -  r_cg(2));
@@ -28,7 +30,7 @@ Aimeas = Acc_true + cross(wb,cross(wb,d)) + cross(wb_dot,d);
 
 
 % Tranform Aimeas to IMU frame.
-
+Aimeas = IMU_to_body'*Aimeas;
 
 % Accelerometer random walk signal %
 % accelerometer_sig_beta = acceleration_random_walk*sqrt(tinc);
@@ -41,6 +43,7 @@ accelerometer_bias = (1 - tinc/accel_corr_time)*accelerometer_bias + sigma_GM*ra
 
 % Accelerometer white noise signal %
 accelerometer_white_noise = accelerometer_VRW*(1/sqrt(tinc))*randn(3,1);     %  White noise (m/s2)
+% accelerometer_noise_density_d = gyroscope_noise_density*(1/sqrt(tinc));
 
 a_meas = (eye(3,3)+ IMU_Accelerometer_SF_MA)*Aimeas + accelerometer_bias + accelerometer_white_noise;
 a_meas = a_meas';

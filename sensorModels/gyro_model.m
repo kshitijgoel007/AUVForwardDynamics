@@ -7,11 +7,14 @@ function [WMeas, gyro_bias] = gyro_model(wb, gyro_bias, tinc)
 global gyroscope_bias_instability;
 global gyroscope_ARW;
 global gyro_corr_time;
+global IMU_to_body;
+% global gyroscope_noise_density;
 
 % convert wb from [rad/s] to [deg/s]
-wb = wb*180*(1/3.14);
+wb = wb*180/3.14;
 
 % transform wb to IMU frame.
+wb = IMU_to_body'*wb;
 
 % Gyroscope random walk signal %
 % gyroscope_sig_beta = gyroscope_random_walk*sqrt(tinc);
