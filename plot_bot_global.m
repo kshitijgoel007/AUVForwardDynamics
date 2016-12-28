@@ -1,30 +1,41 @@
 function plot_bot_global(fname,phi,theta,si,Xcm,Ycm,Zcm,input_data)
 %function for drawing the bot at different time instants
-
+%input_data=3185*3 constant matrix containing coordinates of bot in body frame 
 %R=rotation matrix
-R_phi=[1 0 0;0 cos(phi) -sin(phi); 0 sin(phi) cos(phi)];
-R_theta=[cos(theta) 0 sin(theta);0 1 0; -sin(theta) 0 cos(theta)];
-R_si=[cos(si) -sin(si) 0; sin(si) cos(si) 0;0 0 1];
-R=R_phi*R_theta*R_si;  
 
-poscm=[Xcm;Ycm;Zcm];
+R=[cos(si)*cos(theta) -sin(si)*cos(phi)+cos(si)*sin(theta)*sin(phi) sin(si)*sin(phi)+cos(si)*cos(phi)*sin(theta);
+   sin(si)*cos(theta) cos(si)*cos(phi)+sin(phi)*sin(theta)*sin(si) -cos(si)*sin(phi)+sin(theta)*sin(si)*cos(phi);
+  -sin(theta)         cos(theta)*sin(phi)                          cos(theta)*cos(phi)                         ;];
 
-if det(R)~=0
-   [row1,col1]=size(input_data) ;
-   output_data=zeros(row1,col1);
-   
+
+ poscm=[Xcm;Ycm;Zcm];
+
+    [row1,col1]=size(input_data) ;
+    output_data=zeros(row1,col1);
+    
    for i=1:row1
-       temp(1,1)=input_data(i,1);
-       temp(2,1)=input_data(i,2);
-       temp(3,1)=input_data(i,3);
        
-       %output_data(i,:)=((inv(R)*temp)+poscm)';
-       output_data(i,:)=(temp+poscm)';
+       %rotating the bot
+       output_data(i,:)=(R*input_data(i,:)')';
+       
+       %now translating the bot
+       output_data(i,:)=output_data(i,:)+poscm';
    end
    
+%plotting bot   
+scatter(output_data(:,1),output_data(:,2));
+% xlim([-40 40]);
+% ylim([-20 20]);
+grid;
+xlabel('X');
+ylabel('Y');
+hold on;
+
+
+%storing bot coordinates
 fname2=['Global_bot_coordinates_case_',fname,'.csv'] ;
 fid2=fopen(fname2,'a');
 dlmwrite(fname2,output_data,'roffset',1,'coffset',0,'-append');
 fclose(fid2) ;
 end
-end
+
