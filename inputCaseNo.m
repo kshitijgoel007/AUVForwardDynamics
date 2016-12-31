@@ -43,10 +43,17 @@
   prompt = 'input case no(input 0 to quit):';
   temp = input(prompt);
   caseNo=num2str(temp,'%0d') ;
-  Y=euler(caseNo,timespan,X);
-  
+  prompt2 = 'euler(0) or rk4(1)?  : ';
+  sCheck = input(prompt2);
+  if sCheck==0
+      Y=euler(caseNo,timespan,X);
+  end
+  if sCheck==1
+      Y=Runge_Kutta_solver(caseNo,timespan,X);
+  end
+  %Y=Runge_Kutta_solver(caseNo,timespan,X);
 % Function for plotting
-  plotData(Y);
+  plotData(Y, timespan);
 
 % Function for bot visualisation
   visualiseBot(timespan,Y,caseNo);
@@ -75,40 +82,31 @@ end
   
  
 %*************************************************************************
-  function plotData(Y)
+  function plotData(Y,timespan)
     
   r2d = 180/pi;
  
    figure(1);
-   subplot(3,1,1);plot(Y(:,1),Y(:,2));xlabel('time');ylabel('u');
-   subplot(3,1,2);plot(Y(:,1),Y(:,3));xlabel('time');ylabel('v');
-   subplot(3,1,3);plot(Y(:,1),Y(:,4));xlabel('time');ylabel('w');
+   subplot(3,1,1);plot(timespan,Y(:,2));xlabel('time');ylabel('u');
+   subplot(3,1,2);plot(timespan,Y(:,3));xlabel('time');ylabel('v');
+   subplot(3,1,3);plot(timespan,Y(:,4));xlabel('time');ylabel('w');
   
   figure(2);
-   subplot(3,1,1);plot(Y(:,1),Y(:,5));xlabel('time');ylabel('p');
-   subplot(3,1,2);plot(Y(:,1),Y(:,6));xlabel('time');ylabel('q');
-   subplot(3,1,3);plot(Y(:,1),Y(:,7));xlabel('time');ylabel('r');
+   subplot(3,1,1);plot(timespan,Y(:,5));xlabel('time');ylabel('p');
+   subplot(3,1,2);plot(timespan,Y(:,6));xlabel('time');ylabel('q');
+   subplot(3,1,3);plot(timespan,Y(:,7));xlabel('time');ylabel('r');
   
   
   figure(3);
-   subplot(3,1,1);plot(Y(:,1),Y(:,12)*r2d);xlabel('time');ylabel('\theta');
-   subplot(3,1,2);plot(Y(:,1),Y(:,11)*r2d);xlabel('time');ylabel('\phi');
-   subplot(3,1,3);plot(Y(:,1),Y(:,13)*r2d);xlabel('time');ylabel('\psi');
+   subplot(3,1,1);plot(timespan,Y(:,12)*r2d);xlabel('time');ylabel('\theta');
+   subplot(3,1,2);plot(timespan,Y(:,11)*r2d);xlabel('time');ylabel('\phi');
+   subplot(3,1,3);plot(timespan,Y(:,13)*r2d);xlabel('time');ylabel('\psi');
    %saveas(figure(2),'E:\AUV\AUVForwardDynamics\Results\vert_zigzag_stern\const_const\euler', 'eps');
    
    figure(4);
-   subplot(3,1,1);plot(Y(:,1),Y(:,8)); xlabel('time');ylabel('X');
-   subplot(3,1,2);plot(Y(:,1),Y(:,9)); xlabel('time');ylabel('Y');
-   subplot(3,1,3);plot(Y(:,1),Y(:,10)); xlabel('time');ylabel('Z');
+   subplot(3,1,1);plot(timespan,Y(:,8)); xlabel('time');ylabel('X');
+   subplot(3,1,2);plot(timespan,Y(:,9)); xlabel('time');ylabel('Y');
+   subplot(3,1,3);plot(timespan,Y(:,10)); xlabel('time');ylabel('Z');
    %saveas(figure(3),'E:\AUV\AUVForwardDynamics\Results\vert_zigzag_stern\const_const\xyz', 'eps');
    
-   
-   figure(5);
-   subplot(3,1,1);
-   plot(Y(:,1),Y(:,17)); xlabel('time');ylabel('X');
-   
-  
   end
-
-  
-  
