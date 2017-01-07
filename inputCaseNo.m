@@ -23,7 +23,8 @@
   addpath('actuator dynamics');
   addpath('utils');  
   addpath('PDcontrol');
-  addpath('excel data');
+  addpath('generated/excel data');
+  addpath('Solvers');
 
   timespan=0:.1:endtime;
 
