@@ -3,10 +3,10 @@
 % MODELLING RUDDER DEFLECTION FOR TRACKING CONTROL USING PD CONTROLLER
 % Calling fn : forwarddynamics2 
   addpath('utils');  
+  geoprop;
   control_surf_param;
   global maxrudd;
   global max_rudd_rate;
-  
   U = 1;
   TE =2.5;%sec
   a = 1;
