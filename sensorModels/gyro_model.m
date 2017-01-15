@@ -1,5 +1,5 @@
 function [WMeas, gyro_bias] = gyro_model(wb, gyro_bias, tinc)
-% GYRO_MODEL generates measured angular velocity in [deg/s]
+% GYRO_MODEL generates measured angular velocity in [rad/s]
 %  wb : Angular velocity of body expressed in body-frame [rad/s]
 %  tinc : time step, [IMPORTANT : Depends upon sampling rate in case of actual IMU]
 %  gyro_bias : previous value of bias
@@ -10,8 +10,8 @@ global gyro_corr_time;
 global IMU_to_body;
 % global gyroscope_noise_density;
 
-% convert wb from [rad/s] to [deg/s]
-wb = wb*180/3.14;
+% % convert wb from [rad/s] to [deg/s]
+% wb = wb*180/3.14;
 
 % transform wb to IMU frame.
 wb = IMU_to_body'*wb;

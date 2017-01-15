@@ -2,6 +2,8 @@ function [ rot_matrix ] = euler_to_bodyRates(euler_angles , type)
 %EULER_TO_BODYRATES Returns the rotation matrix for conversion from euler
 %to body fixed rates.
 %   euler_angles [ phi, theta, psi] 1 x 3 (in degrees)
+%   type = 1 , euler to body
+%   type = -1, body to euler
 
 
 phi = euler_angles(1);

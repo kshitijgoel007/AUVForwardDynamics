@@ -9,7 +9,7 @@ function [a_meas , accelerometer_bias ] = accelerometer_model(wb, wb_dot, Acc_tr
 % ACCELEROMETER_MODEL generates measured acceleration data [m/s2]
 %  wb : Angular velocity of body expressed in body-frame [rad/s]
 %  wb_dot : Angular acceleration of body expressed in body-frame [rad/s2]
-%  Acc_true : True value of acceleration (non-gravitational part)
+%  Acc_true : True value of acceleration (along with gravity)
 %  tinc : time step, [IMPORTANT : Depends upon sampling rate in case of actual IMU]
 %  accelerometer_bias : previous value of bias
 
@@ -20,13 +20,14 @@ global IMU_Accelerometer_SF_MA;
 global accelerometer_VRW;
 global accel_corr_time;
 global IMU_to_body;
+global gravity; % scalar value
 % global accelerometer_noise_density;
 
 d = [(accelerometer_location(1) -  r_cg(1));
      (accelerometer_location(2) -  r_cg(2));
      (accelerometer_location(3) -  r_cg(3))];
- 
-Aimeas = Acc_true + cross(wb,cross(wb,d)) + cross(wb_dot,d);
+g = [0 0 1]'*gravity;
+Aimeas = Acc_true -g + cross(wb,cross(wb,d)) + cross(wb_dot,d);
 
 
 % Tranform Aimeas to IMU frame.
@@ -35,7 +36,6 @@ Aimeas = IMU_to_body'*Aimeas;
 % Accelerometer random walk signal %
 % accelerometer_sig_beta = acceleration_random_walk*sqrt(tinc);
 % accelerometer_beta += acceleration_sig_beta*randn(3,1);
-
 
 % Accelerometer bias instability, gauss markov process %
 sigma_GM = sqrt(tinc/accel_corr_time)*accelerometer_bias_instability;

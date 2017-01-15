@@ -12,8 +12,14 @@ accelerometer_bias_instability = 0.023*1e-3*9.81;   % 0.023 milli g  (m/s2)
 accelerometer_VRW = 0.063;      % Velocity random walk (m/s) per rt(sec)
 accel_corr_time = 110;
 
-gyroscope_noise_density = 0.03;      % 0.03 deg/sec per rt(Hz) 1 sigma (continuous)
+gyroscope_noise_density = 0.03*(pi/180);      % 0.03 deg/sec  (rad/sec) per rt(Hz) 1 sigma (continuous)
 % gyroscope_noise_density_d = gyroscope_noise_density*(1/sqrt(tinc)) % white noise 1 sigma (discrete)
-gyroscope_bias_instability = 10.08*(1/3600);   % 10.08 deg/hr  (deg/sec) [Bias instability]
-gyroscope_ARW = 1.5*(1/60);      % Angular random walk ( deg per rt(sec))
+gyroscope_bias_instability = 10.08*(1.0/3600)*(pi/180);   % 10.08 deg/hr  (rad/sec) [Bias instability]
+gyroscope_ARW = 1.5*(1.0/60)*(pi/180);      % Angular random walk ( rad per rt(sec))
 gyro_corr_time = 270;
+
+gravity = 9.8; % m/s2
+earth_rate = [ 0 0 0]';
+R_i2t = [1 0 0
+         0 1 0
+         0 0 1];
