@@ -12,13 +12,13 @@ psi = euler_angles(3);
 
 % calculate the rotation matrix
 if type == 1
-    rot_matrix = [ 1         0           -sind(theta);
-                   0  cosd(phi) sind(phi)*cosd(theta);
-                   0 -sind(phi) cosd(phi)*cosd(theta);];
+    rot_matrix = [ 1         0           -sin(theta);
+                   0  cos(phi) sin(phi)*cos(theta);
+                   0 -sin(phi) cos(phi)*cos(theta);];
 elseif type == -1
-    rot_matrix = [ 1  sind(phi)*tand(theta)  cosd(phi)*tand(theta);
-                   0              cosd(phi)             -sind(phi);
-                   0  sind(phi)/cosd(theta)  cosd(phi)/cosd(theta);];
+    rot_matrix = [ 1  sin(phi)*tan(theta)  cos(phi)*tan(theta);
+                   0              cos(phi)             -sin(phi);
+                   0  sin(phi)/cos(theta)  cos(phi)/cos(theta);];
 end
 
 end

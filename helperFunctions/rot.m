@@ -4,20 +4,19 @@ function [ R ] = rot( theta, axis )
 %   where theta is in degrees
 
 if strcmp(axis,'z')
-    R = [cosd(theta) sind(theta) 0;
-        -sind(theta) cosd(theta) 0;
+    R = [cos(theta) sin(theta) 0;
+        -sin(theta) cos(theta) 0;
          0           0           1];
-     
+
 elseif strcmp(axis,'y')
-    R = [cosd(theta) 0  -sind(theta);
+    R = [cos(theta) 0  -sin(theta);
          0           1             0;
-         sind(theta) 0   cosd(theta);];
-    
+         sin(theta) 0   cos(theta);];
+
 elseif strcmp(axis,'x')
     R = [1           0            0;
-         0  cosd(theta) sind(theta);
-         0 -sind(theta) cosd(theta);];
-end
+         0  cos(theta) sin(theta);
+         0 -sin(theta) cos(theta);];
+en
 
-end
-
+en

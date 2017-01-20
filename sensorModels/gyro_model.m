@@ -8,7 +8,7 @@ global gyroscope_bias_instability;
 global gyroscope_ARW;
 global gyro_corr_time;
 global IMU_to_body;
-% global gyroscope_noise_density;
+global gyroscope_noise_density;
 
 % % convert wb from [rad/s] to [deg/s]
 % wb = wb*180/3.14;
@@ -25,8 +25,9 @@ sigma_GM = sqrt(tinc/gyro_corr_time)*gyroscope_bias_instability;
 gyro_bias = (1 - tinc/gyro_corr_time)*gyro_bias + sigma_GM*randn(3,1);
 
 % Gyroscope white noise signal %
-gyroscope_white_noise = gyroscope_ARW*(1/sqrt(tinc))*randn(3,1);     %  White noise (deg/s)
-% gyroscope_noise_density_d = gyroscope_noise_density*(1/sqrt(tinc));
+% gyroscope_white_noise = gyroscope_ARW*(1/sqrt(tinc))*randn(3,1);     %  White noise (deg/s)
+gyroscope_noise_density_d = gyroscope_noise_density*(1/sqrt(tinc));
+gyroscope_white_noise = gyroscope_noise_density_d*randn(3,1); 
 
 WMeas = wb + gyro_bias + gyroscope_white_noise;
 WMeas = WMeas';

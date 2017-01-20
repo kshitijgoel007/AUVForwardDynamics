@@ -1,10 +1,10 @@
-function [ p_meas ] = pSensor_model( height )
+function [ p_meas ] = pSensor_model( depth )
 %PSENSOR_MODEL returns measured pressure at given height
-%   height : Height of c.g from bottom
+%   Depht : Depth of c.g from surface of water
 
 global density; % density of water
 
-p_meas = density*9.8*height + randn;
+p_meas = density*9.8*depth + 0.005*randn;
 
 end
 
