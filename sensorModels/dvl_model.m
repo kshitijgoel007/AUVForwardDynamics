@@ -12,6 +12,5 @@ vel_i_meas = DVL_to_body'*vel_i_meas;
 
 % velocity model
 vel_meas = vel_i_meas + 0.05*randn(3,1);
-vel_meas = vel_meas';
 end
 
