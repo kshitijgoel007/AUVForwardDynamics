@@ -1,0 +1,46 @@
+
+  function runSim_test()
+
+% Input function for specifying which maneuver to perform
+
+% u =1,1.5,2m/s
+% CASE1: TURNING DEL_R_ORDERED=10DEGREE
+% CASE2: TURNING DEL_R_ORDERED=15DEGREE
+% CASE3: HORIZONTAL ZIG-ZAG MOTION: DEL_R_ORDERED=10DEGREE INITIALLY
+% CASE4: HORIZONTAL ZIG-ZAG MOTION: DEL_R_ORDERED=-10DEGREE INTIALLY
+% CASE5: HORIZONTAL ZIG-ZAG MOTION: DEL_R_ORDERED=20DEGREE INITIALLY
+% CASE6: HORIZONTAL ZIG-ZAG MOTION: DEL_R_ORDERED=-20DEGREE INITIALLY
+% CASE7: VERTICAL   ZIG-ZAG MOTION: DEL_ST_ORDERED= 10DEGREE INITIALLY
+% CASE8: VERTICAL   ZIG-ZAG MOTION: DEL_ST_ORDERED=-10DEGREE INITIALLY
+% CASE9: STEERING PD CONTROLLER
+% CASE10:  DIVING PD CONTROLLER
+% CASE 11: TURNING DEL_R_ORDERED = -10 DEGREE, 
+% CASE 12: TURNINGDEL_R_ORDERED = -15 DEGREE, 
+% CASE 13: VERTICAL ZIG-ZAG MOTION: DEL_ST_ORDERED = 20DEGREE INITIALLY,
+% CASE 14: VERTICAL ZIG-ZAG MOTION: DEL_ST_ORDERED = -20 DEGREE INITIALLY
+
+
+  clc;
+  close all;
+  addpath('actuator dynamics');
+  addpath('utils');  
+  addpath('PDcontrol');
+  addpath('Solvers');
+ 
+
+X = zeros(18,1);
+X(18) = 215.3;
+X(1) = 2;
+
+%setting solver to euler
+sCheck =0;
+
+% setting time span
+tspan = 0:.1:1;
+
+%running simulation
+for caseNo = 100
+  
+    Y=callSolver(caseNo,tspan,X,sCheck);
+     plotData(Y,caseNo);
+end
