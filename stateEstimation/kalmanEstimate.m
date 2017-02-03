@@ -97,13 +97,16 @@ for i = 1:length(t)
 %    getSensorData(X_est(:,i))
    
     if (i < length(t)) 
-        [X_est(:,i+1),P_est(i+1,:,:)] = correct(ukf, yMeas(:,i));        
+        if(rem(i,10) == 0)
+            [X_est(:,i+1),P_est(i+1,:,:)] = correct(ukf, yMeas(:,i));        
+        end
         [X_est(:,i+1),P_est(i+1,:,:)] = predict(ukf, U, tinc);
         
     end
     
    e(:,i) = yMeas(:,i) - getSensorData(X_est(:,i));
-    
+   
+   fprintf('t : %d \n',i*tinc);
     
     
 end
