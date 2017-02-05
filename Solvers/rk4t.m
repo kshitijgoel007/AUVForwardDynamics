@@ -2,12 +2,10 @@ function Y = rk4t(F,tspan,y0,ord_defl,caseNo)
 
 h = diff(tspan);
 % y0 = y0(:);   % Make a column vector.
-nrows = length(y0)+6;
+nrows = length(y0) + 6;
 N = length(tspan);
 Y = zeros(nrows,N);
 K = zeros(nrows,4);
-
-        
        
 Y(:,1) = y0;
 

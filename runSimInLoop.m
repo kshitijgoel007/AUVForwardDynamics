@@ -55,7 +55,7 @@ X(1) = 1;
 
 
 %running simulation
-for i = 9:14
+for i = 10:10
    caseNo =num2str(i); 
     Y=callSolver(caseNo,tspan,X,sCheck);
     
@@ -82,77 +82,77 @@ for i = 9:14
      fclose(fid);
 
 end
-
-%............................u = 1.5m/s................................
-X = zeros(18,1);
-X(18) = 163;
-X(1) = 1.5;
-
-
-
-%running simulation
-for i = 1:14
-   caseNo =num2str(i); 
-    Y=callSolver(caseNo,tspan,X,sCheck);
-    
-    %SAVING Y VECTOR
-    %angle conversion to degrees
-     temp = Y;
-     temp(:,5:7) = temp(:,5:7)*r2d;
-     temp(:,11:17)= temp(:,11:17)*r2d;
-     temp(:,23:25) = temp(:,23:25)*r2d;
-     
-     
-     %writing labels
-     fname1=['excel data/u_1dot5m_s/case_',caseNo,'.csv'] ;
-     fid  = fopen(fname1,'w');
-     [rows,cols]=size(lbl);
-      for k=1:rows
-           fprintf(fid,'%s,',lbl{k,1:end-1});
-           fprintf(fid,'%s\n',lbl{k,end});
-      end
-      fclose(fid);
-
-     fid=fopen(fname1,'a') ;
-     dlmwrite(fname1,temp,'-append','precision',4);
-     fclose(fid);
-
 end
-
-........................u = 2m/s..............................
-X = zeros(18,1);
-X(18) = 215.3;
-X(1) = 2;
-
-
-
-
-%running simulation
-for i = 1:14
-    caseNo =num2str(i); 
-    Y=callSolver(caseNo,tspan,X,sCheck);
-    
-    %SAVING Y VECTOR
-    %angle conversion to degrees
-     temp = Y;
-     temp(:,5:7) = temp(:,5:7)*r2d;
-     temp(:,11:17)= temp(:,11:17)*r2d;
-     temp(:,23:25) = temp(:,23:25)*r2d;
-     
-     
-     %writing labels
-     fname1=['excel data/u_2m_s/case_',caseNo,'.csv'] ;
-     fid  = fopen(fname1,'w');
-     [rows,cols]=size(lbl);
-      for k=1:rows
-           fprintf(fid,'%s,',lbl{k,1:end-1});
-           fprintf(fid,'%s\n',lbl{k,end});
-      end
-      fclose(fid);
-
-     fid=fopen(fname1,'a') ;
-     dlmwrite(fname1,temp,'-append','precision',4);
-     fclose(fid);
-
-end
-
+% %............................u = 1.5m/s................................
+% X = zeros(18,1);
+% X(18) = 163;
+% X(1) = 1.5;
+% 
+% 
+% 
+% %running simulation
+% for i = 1:14
+%    caseNo =num2str(i); 
+%     Y=callSolver(caseNo,tspan,X,sCheck);
+%     
+%     %SAVING Y VECTOR
+%     %angle conversion to degrees
+%      temp = Y;
+%      temp(:,5:7) = temp(:,5:7)*r2d;
+%      temp(:,11:17)= temp(:,11:17)*r2d;
+%      temp(:,23:25) = temp(:,23:25)*r2d;
+%      
+%      
+%      %writing labels
+%      fname1=['excel data/u_1dot5m_s/case_',caseNo,'.csv'] ;
+%      fid  = fopen(fname1,'w');
+%      [rows,cols]=size(lbl);
+%       for k=1:rows
+%            fprintf(fid,'%s,',lbl{k,1:end-1});
+%            fprintf(fid,'%s\n',lbl{k,end});
+%       end
+%       fclose(fid);
+% 
+%      fid=fopen(fname1,'a') ;
+%      dlmwrite(fname1,temp,'-append','precision',4);
+%      fclose(fid);
+% 
+% end
+% 
+% ........................u = 2m/s..............................
+% X = zeros(18,1);
+% X(18) = 215.3;
+% X(1) = 2;
+% 
+% 
+% 
+% 
+% %running simulation
+% for i = 1:14
+%     caseNo =num2str(i); 
+%     Y=callSolver(caseNo,tspan,X,sCheck);
+%     
+%     %SAVING Y VECTOR
+%     %angle conversion to degrees
+%      temp = Y;
+%      temp(:,5:7) = temp(:,5:7)*r2d;
+%      temp(:,11:17)= temp(:,11:17)*r2d;
+%      temp(:,23:25) = temp(:,23:25)*r2d;
+%      
+%      
+%      %writing labels
+%      fname1=['excel data/u_2m_s/case_',caseNo,'.csv'] ;
+%      fid  = fopen(fname1,'w');
+%      [rows,cols]=size(lbl);
+%       for k=1:rows
+%            fprintf(fid,'%s,',lbl{k,1:end-1});
+%            fprintf(fid,'%s\n',lbl{k,end});
+%       end
+%       fclose(fid);
+% 
+%      fid=fopen(fname1,'a') ;
+%      dlmwrite(fname1,temp,'-append','precision',4);
+%      fclose(fid);
+% 
+% end
+% 

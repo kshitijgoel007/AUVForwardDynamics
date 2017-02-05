@@ -50,42 +50,42 @@
 
 %% ************* Code for taking input from user**********************
  
-% Initialise state vector X here
+%Initialise state vector X here
   
-% X = init_state();
-% 
-% 
-% prompt = 'input case no(input 0 to quit):';
-% temp = input(prompt);
-%   
-%   
-% if(temp~=0)
-%      
-%      caseNo=num2str(temp,'%0d') ;
-%      prompt = 'input simulation time(sec):';
-%      endtime = input(prompt);timespan=0:.1:endtime;
-%      
-%      prompt = 'euler(0) or rk4(1)?  : ';
-%      sCheck = input(prompt);
-%      Y=callSolver(caseNo,timespan,X,sCheck);
-%      plotData(Y,caseNo);
-%      
-%      % SAVING Y VECTOR
-%      % angle conversion to degrees
-%      temp = Y;
-%      temp(:,5:7) = temp(:,5:7)*r2d;
-%      temp(:,11:17)= temp(:,11:17)*r2d;
-%      temp(:,23:25) = temp(:,23:25)*r2d;
-%      fname1=['excel data/case_',caseNo,'.csv'] ;
-%      fid=fopen(fname1,'a') ;
-%      dlmwrite(fname1,temp,'-append','precision',4);
-%      fclose(fid);
-% 
-% 
-%     % Function for bot visualisation
-%     %  visualiseBot(timespan,Y,caseNo);
+X = init_state();
 
-% end
+
+prompt = 'input case no(input 0 to quit):';
+temp = input(prompt);
+  
+  
+if(temp~=0)
+     
+     caseNo=num2str(temp,'%0d') ;
+     prompt = 'input simulation time(sec):';
+     endtime = input(prompt);timespan=0:.1:endtime;
+     
+     prompt = 'euler(0) or rk4(1)?  : ';
+     sCheck = input(prompt);
+     Y=callSolver(caseNo,timespan,X,sCheck);
+     plotData(Y,caseNo);
+     
+     % SAVING Y VECTOR
+     % angle conversion to degrees
+     temp = Y;
+     temp(:,5:7) = temp(:,5:7)*r2d;
+     temp(:,11:17)= temp(:,11:17)*r2d;
+     temp(:,23:25) = temp(:,23:25)*r2d;
+     fname1=['excel data/case_',caseNo,'.csv'] ;
+     fid=fopen(fname1,'a') ;
+     dlmwrite(fname1,temp,'-append','precision',4);
+     fclose(fid);
+
+
+    % Function for bot visualisation
+    %  visualiseBot(timespan,Y,caseNo);
+
+end
 
 
 %% ***************** code for getting 30 min of data at 100 hz*******************

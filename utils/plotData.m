@@ -17,7 +17,6 @@
 %    subplot(3,1,1);plot(Y(:,1),Y(:,12)*r2d);xlabel('time');ylabel('\theta');
 %    subplot(3,1,2);plot(Y(:,1),Y(:,11)*r2d);xlabel('time');ylabel('\phi');
 %    subplot(3,1,3);plot(Y(:,1),Y(:,13)*r2d);xlabel('time');ylabel('\psi');
-%    %saveas(figure(2),'E:\AUV\AUVForwardDynamics\Results\vert_zigzag_stern\const_const\euler', 'eps');
 %    
 %    figure(4);
 %    subplot(3,1,1);plot(Y(:,1),Y(:,8)); xlabel('time');ylabel('X');
@@ -42,9 +41,9 @@ switch caseNo
       subplot(3,1,3);plot(Y(:,1),Y(:,10)); xlabel('time');ylabel('Z');
       subplot(3,1,1);plot(Y(:,1),Y(:,17)*180/pi); xlabel('time');ylabel('\delta_r');
 
-      title('Turning manoeuvre with ordered rudder deflection = 10 degree');
-      saveas(figure(1),'C:\Users\Shubham\Desktop\AUV\AUV_DYNAMIC_MODELLING\AUVForwardDynamics\plots\CaseI', 'eps');
-      saveas(figure(1),'C:\Users\Shubham\Desktop\AUV\AUV_DYNAMIC_MODELLING\AUVForwardDynamics\plots\CaseI', 'jpg');
+      title('Turning maneuver with ordered rudder deflection = 10 degree');
+     % saveas(figure(1),'C:\Users\Shubham\Desktop\AUV\AUV_DYNAMIC_MODELLING\AUVForwardDynamics\plots\CaseI', 'eps');
+     % saveas(figure(1),'C:\Users\Shubham\Desktop\AUV\AUV_DYNAMIC_MODELLING\AUVForwardDynamics\plots\CaseI', 'jpg');
 %      
 %       figure(2);plot(Y(:,8),Y(:,9)); xlabel('X');ylabel('Y');title('Turning manoeuvre with ordered rudder deflection = 10 degree');
 %       figure(3);plot(Y(:,1),Y(:,10)); xlabel('time');ylabel('Z');title('Turning manoeuvre with ordered rudder deflection = 10 degree');

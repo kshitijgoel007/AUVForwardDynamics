@@ -49,8 +49,9 @@ function dX = forwarddynamics2(t, X,ord_defl,caseNo,D)
 addpath('actuator dynamics');
 addpath('utils');
 addpath('PDcontrol/divingControl');
-addpath('PDcontrol/SpeedControl');
+addpath('PDcontrol/heavePitchControl');
 addpath('PDcontrol/steeringControl');
+addpath('PDControl/swayYawControl');
 
 % Files containing bot properties
 geoprop;
