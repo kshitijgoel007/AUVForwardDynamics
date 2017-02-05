@@ -2,12 +2,12 @@ function Y = rk4t(F,tspan,y0,ord_defl,caseNo)
 
 h = diff(tspan);
 % y0 = y0(:);   % Make a column vector.
-nrows = length(y0) + 6;
+nrows = length(y0);
 N = length(tspan);
-Y = zeros(nrows,N);
+Y = zeros(nrows+6,N);
 K = zeros(nrows,4);
        
-Y(:,1) = y0;
+Y(1:18,1) = y0;
 
 % initialising disturbance function
 D = zeros(length(y0),1);
@@ -19,7 +19,7 @@ for i = 2:N
   
   ti = tspan(i-1);
   hi = h(i-1);
-  yi = Y(:,i-1);
+  yi = Y(1:18,i-1);
   
   
   
@@ -88,20 +88,18 @@ for i = 2:N
           D(:) = zeros();
       
       end
- end
-      
-  
-  
+  end
+
       
   %Y(i,1) = tspan(i-1);
   K(:,1) = feval(F,ti,yi,ord_defl,caseNo,D);
   K(:,2) = feval(F,ti+0.5*hi,yi+0.5*hi*K(:,1),ord_defl,caseNo,D);
   K(:,3) = feval(F,ti+0.5*hi,yi+0.5*hi*K(:,2),ord_defl,caseNo,D);  
   K(:,4) = feval(F,tspan(i),yi+hi*K(:,3),ord_defl,caseNo,D);
-  Y(:,i) = yi + (hi/6)*(K(:,1) + 2*K(:,2) + 2*K(:,3) + K(:,4));
+  Y(1:18,i) = yi + (hi/6)*(K(:,1) + 2*K(:,2) + 2*K(:,3) + K(:,4));
   
   %includ acc terms
-  c = length(Y(:,i));
+  c = length(Y(1:18,i));
   Y(c+1:c+6)= K(1:6,1);
   
 end
@@ -109,7 +107,7 @@ end
 
 Y = Y.';
 buffer(:,1) = tspan;
-for iter=1:nrows%Column
+for iter=1:nrows+6%Column
     for j=1:N%Rows
         buffer(j,iter+1) = Y(j,iter);
     end
