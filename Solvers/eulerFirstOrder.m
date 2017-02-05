@@ -1,48 +1,43 @@
-function Y = rk4t(F,tspan,y0,ord_defl,caseNo)
 
-h = diff(tspan);
-% y0 = y0(:);   % Make a column vector.
-nrows = length(y0) + 6;
-N = length(tspan);
-Y = zeros(nrows,N);
-K = zeros(nrows,4);
-       
-Y(:,1) = y0;
+function Y=eulerFirstOrder(forwarddynamics2,timespan,X, ord_defl,caseNo)
+% Function for solving 6DOF equations using 1st order euler method
+
+
+h = diff(timespan);% for obtaining time step
+dt = h(1);
+
+Y = zeros(length(timespan),length(X)+7);
+Y(:,1) = timespan(:);
+Y(1,2:end -6) = X(:);
+
 
 % initialising disturbance function
-D = zeros(length(y0),1);
+D = zeros(length(X),1);
  
 
-%*********************SOLVING******************************************
+for i=2:length(timespan)
+      
+       yi = Y(i-1,:);
 
-for i = 2:N
-  
-  ti = tspan(i-1);
-  hi = h(i-1);
-  yi = Y(:,i-1);
-  
-  
-  
-  
-  if strcmp(caseNo,'3') || strcmp(caseNo,'4') ||strcmp(caseNo,'5')||strcmp(caseNo,'6') 
-      if (yi(12)>abs(ord_defl(1))) 
+        
+       if strcmp(caseNo,'3') || strcmp(caseNo,'4') ||strcmp(caseNo,'5')||strcmp(caseNo,'6') 
+           if (yi(12)>abs(ord_defl(1))) 
             ord_defl(1)=abs(ord_defl(1));
-      elseif (yi(12)<-abs(ord_defl(1)))
+           elseif (yi(12)<-abs(ord_defl(1)))
             ord_defl(1)=-abs(ord_defl(1));    
-      end
-  end
+           end
+       end
   
   
-  if strcmp(caseNo,'7') || strcmp(caseNo,'8')|| strcmp(caseNo,'13') || strcmp(caseNo,'14')
-      if (yi(11)>abs(ord_defl(2))) 
+      if strcmp(caseNo,'7') || strcmp(caseNo,'8')|| strcmp(caseNo,'13') || strcmp(caseNo,'14')
+           if (yi(11)>abs(ord_defl(2))) 
             ord_defl(2)=abs(ord_defl(2));
-        else if (yi(11)<-abs(ord_defl(2)))
+           elseif (yi(11)<-abs(ord_defl(2)))
             ord_defl(2)=-abs(ord_defl(2));    
-            end
+           end
       end
-  end
-  
-   
+      
+    
   if strcmp(caseNo,'9')
       
       % giving external disturbance force 
@@ -88,31 +83,30 @@ for i = 2:N
           D(:) = zeros();
       
       end
+  end
+    
+
+      
+      
+ DX=forwarddynamics2(timespan(i),X,ord_defl,caseNo,D);
+    temp=X+DX*dt;
+    X=temp;
+        
+  for j=1:length(X)
+      Y(i,j+1)=X(j);
+  end
+  
+  for k = 1:6
+      Y(i,length(X)+1+k) = DX(k);
+  end
+  
+end
+ 
+
+
+    
  end
-      
-  
-  
-      
-  %Y(i,1) = tspan(i-1);
-  K(:,1) = feval(F,ti,yi,ord_defl,caseNo,D);
-  K(:,2) = feval(F,ti+0.5*hi,yi+0.5*hi*K(:,1),ord_defl,caseNo,D);
-  K(:,3) = feval(F,ti+0.5*hi,yi+0.5*hi*K(:,2),ord_defl,caseNo,D);  
-  K(:,4) = feval(F,tspan(i),yi+hi*K(:,3),ord_defl,caseNo,D);
-  Y(:,i) = yi + (hi/6)*(K(:,1) + 2*K(:,2) + 2*K(:,3) + K(:,4));
-  
-  %includ acc terms
-  c = length(Y(:,i));
-  Y(c+1:c+6)= K(1:6,1);
-  
-end
-
-
-Y = Y.';
-buffer(:,1) = tspan;
-for iter=1:nrows%Column
-    for j=1:N%Rows
-        buffer(j,iter+1) = Y(j,iter);
-    end
-end
-Y = buffer;
-end
+ 
+ 
+ 
+ 
