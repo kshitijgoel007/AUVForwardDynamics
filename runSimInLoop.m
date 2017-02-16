@@ -55,7 +55,7 @@ X(1) = 1;
 
 
 %running simulation
-for i = 10:10
+parfor i = 10:10
    caseNo =num2str(i); 
     Y=callSolver(caseNo,tspan,X,sCheck);
     
