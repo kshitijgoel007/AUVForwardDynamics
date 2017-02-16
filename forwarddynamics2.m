@@ -43,7 +43,9 @@
 % function dX = forwarddynamics2(t, X)             
 
 
-function dX = forwarddynamics2(t, X,ord_defl,caseNo,D)              
+
+
+function dX = forwarddynamics2(t, X, ord_defl, caseNo, D)              
 
 
 addpath('actuator dynamics');
@@ -51,7 +53,6 @@ addpath('utils');
 addpath('PDcontrol/divingControl');
 addpath('PDcontrol/heavePitchControl');
 addpath('PDcontrol/steeringControl');
-addpath('PDControl/swayYawControl');
 
 % Files containing bot properties
 geoprop;
@@ -62,7 +63,15 @@ heavederivatives;
 rollderivatives;
 pitchderivatives;
 yawderivatives;
+global Heel;
 
+
+if strcmp(caseNo,'16')==1
+    Heel = 2.5*0.1*9.81;
+end
+if strcmp(caseNo,'16')~=1
+    Heel = 0;
+end
 
 % (A)(dX)= C
 A = [m - (0.5*rho*(L^3)*surge_deriv(5)), 0, 0, 0, m*zg, -m*yg;
@@ -149,7 +158,7 @@ drag_sim_ansys = -(30.4732*u*u+11.3196*u);
     ((Iy-Iz)*q*r-Ixy*p*r+Iyz*(q^2-r^2)+Ixz*p*q-m*yg*(v*p-u*q)+m*zg*(u*r-w*p)+(0.5*rho*L^5)*(roll_deriv(3)*p*q+roll_deriv(4)*q*r)...
     +(0.5*rho*L^4)*(roll_deriv(6)*u*p+roll_deriv(7)*u*r+roll_deriv(8)*v*q+roll_deriv(9)*w*p+roll_deriv(10)*w*r)+(0.5*rho*L^3)*(roll_deriv(11)*u*v+...
     roll_deriv(12)*v*w+(u^2)*(roll_deriv(13)*Del_bp+roll_deriv(13)*Del_bs))+(yg*W-y_b*B)*cos(theta)*cos(phi)-(zg*W-z_b*B)*cos(theta)*sin(phi)...
-    +(0.5*L^4)*roll_deriv(14)*u*p*epsilon+(0.5*rho*(L^3)*u^2)*roll_deriv(15));
+    +(0.5*L^4)*roll_deriv(14)*u*p*epsilon+(0.5*rho*(L^3)*u^2)*roll_deriv(15)+Heel);
 
    
     
@@ -210,7 +219,7 @@ switch caseNo
     case{'9'}
           dX(16) = rudderDynamicsForSwayYawcontrol(Del_r,psi,r);
     case{'10'}
-        dX(13) = sternDynamicsForPitchHeavecontrol(Del_s,theta,q);
+        dX(13) = sternDynamicsForPitchHeavecontrol(Del_s,theta,q,dX(11));
 
     case{'15'}
            dX(16) = rudderDynamicsForSwayYawcontrol(Del_r,psi,r);
@@ -227,3 +236,4 @@ disp(t);
  
 
 end
+
