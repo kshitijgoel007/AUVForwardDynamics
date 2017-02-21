@@ -1,5 +1,5 @@
-accelerometer_location = [0; 0; 0] *1e-3; % [m]
-dvl_location = [0; 0; 0]*1e-3; %[m]
+accelerometer_location = [-100; 20; 20] *1e-3; % [m]
+dvl_location = [-100; 20; 300]*1e-3; %[m]
 
 r_cg = [0; 0; 0] *1e-3; %[m]
 gravity = 9.81; % m/s2
