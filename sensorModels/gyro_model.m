@@ -27,8 +27,8 @@ gyro_bias = (1 - tinc/gyro_corr_time)*gyro_bias + sigma_GM*randn(3,1);
 % Gyroscope white noise signal %
 % gyroscope_white_noise = gyroscope_ARW*(1/sqrt(tinc))*randn(3,1);     %  White noise (deg/s)
 gyroscope_noise_density_d = gyroscope_noise_density*(1/sqrt(tinc));
-gyroscope_white_noise = gyroscope_noise_density_d*randn(3,1); 
+gyroscope_white_noise = gyroscope_noise_density_d*randn(3,1);
 
-WMeas = wb + gyro_bias + gyroscope_white_noise;
+WMeas = wb;% + gyro_bias + gyroscope_white_noise;
 
 end
