@@ -46,6 +46,6 @@ accelerometer_bias = (1 - tinc/accel_corr_time)*accelerometer_bias + sigma_GM*ra
 accelerometer_noise_density_d = accelerometer_noise_density*(1/sqrt(tinc));
 accelerometer_white_noise = accelerometer_noise_density_d*randn(3,1);
 
-a_meas = (eye(3,3)+ IMU_Accelerometer_SF_MA)*Aimeas; % + accelerometer_bias + accelerometer_white_noise;
+a_meas = (eye(3,3)+ IMU_Accelerometer_SF_MA)*Aimeas + accelerometer_bias + accelerometer_white_noise;
 
 end

@@ -63,12 +63,11 @@ g = [0 0 1]'*gravity;
 ac_bias = [0 0 0]';
 omeg_bias = [0 0 0]';
 
-accel_meas = zeros(size(omega_bf));
 %% UKF parameters
 
 sigma_a = accelerometer_noise_density*(1/sqrt(tinc));
 sigma_g = gyroscope_noise_density*(1/sqrt(tinc));
-sigma_apg = sqrt(sigma_a*sigma_a + sigma_g*sigma_g); % TODO : Not confirm
+sigma_apg = sigma_a + sigma_g; %sqrt(sigma_a*sigma_a + sigma_g*sigma_g); % TODO : Not confirm
 % P = diag(ones(9,1));
 P = diag([0.05,0.05,0.05, 0.05,0.05,0.05, 0.05,0.05,0.05]);
 Q = diag([0,0,0, sigma_g, sigma_g, sigma_g, sigma_apg, sigma_apg, sigma_apg]);
@@ -109,13 +108,6 @@ for i = 1:length(t)
    % Update bias
    accel_bias = accel_bias(:,i);
    omega_bias = omega_bias(:,i);
-   
-   % Check acceleration values
-%    accel_meas(:,i) = IMU_to_body'*Aimeas + (DCM(euler_angle(:,i))*g);
-   
-   accel_meas(:,i) = IMU_to_body*IMUaccel_bf_meas(:,i) + (DCM(euler_angle(:,i))*g) ...
-                           - cross(Gyro_omega_bf_meas(:,i),cross(Gyro_omega_bf_meas(:,i),d_IMU)) ...
-                           - cross(omega_bf_dot(:,i),d_IMU);
 
    % Measured IMU data as INPUT, U in prediction step
    U = [  IMUaccel_bf_meas(:,i);
@@ -131,7 +123,7 @@ for i = 1:length(t)
         if(rem(i,10) == 0)
                    
             % Correction step
-%             [X_est(:,i+1),P_est(i+1,:,:)] = correct(ukf, yMeas(:,i));
+            [X_est(:,i+1),P_est(i+1,:,:)] = correct(ukf, yMeas(:,i));
             
         end
        
@@ -158,7 +150,7 @@ hold off;
 
 
 figure
-plot(t,euler_angle); %atan2(sin(euler_angle), cos(euler_angle))*180/3.14);
+plot(t,euler_angle*180/3.14); %atan2(sin(euler_angle), cos(euler_angle))*180/3.14);
 hold on;
 plot(t,X_est(4:6,:)*180/3.14);
 I = legend('$\phi_{true}$','$\theta_{true}$','$\psi_{true}$','$\phi_{est}$','$\theta_{est}$','$\psi_{est}$');
@@ -268,6 +260,19 @@ hold on
 x = X_est(1:3,:);
 plot3(x(1,:),x(2,:),x(3,:));
 hold off;
+
+% figure
+% plot(t,r_dot);
+% legend('v_{x true}','v_{y true}','v_{z true}');
+% xlabel('time (sec)');
+% ylabel('Linear vel. (m/s)');
+% 
+% figure
+% plot(t,r);
+% legend('x_{true}','y_{true}','z_{true}');
+% xlabel('time (sec)');
+% ylabel('Position (m)');
+
 
 % figure
 % plot(t, accel_meas);
