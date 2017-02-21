@@ -43,6 +43,6 @@ x_dot(4:6) = euler_to_bodyRates(X(4:6), -1) * wb; % - R_t2I*(R_i2t*earth_rate));
 % dot{v_{b/t}^{b}} %
 x_dot(7:9) = IMU_to_body*U(1:3) + R_t2b*g_cap ...
              - cross(wb, cross(wb, d_IMU)) ...
-             - cross(wb_dot, d_IMU);
+             ; %- cross(wb_dot, d_IMU);
              % - cross(U(4:6), X(7:9))  - R_t2I*earth_rate_mat*R_t2I*X(7:9)  
 end

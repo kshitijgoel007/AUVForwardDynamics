@@ -7,3 +7,15 @@
 /Results/StateEstimation/Noise1/Trajectory.eps
 /Results/StateEstimation/Noise1/Trajectory.jpg
 /Results/StateEstimation/Noise1/VelError.eps
+/Results/StateEstimation/NewFolder/EulerAngle.eps
+/Results/StateEstimation/NewFolder/EulerAngUcertainity.eps
+/Results/StateEstimation/NewFolder/Position.eps
+/Results/StateEstimation/NewFolder/PositionUncertainity.eps
+/Results/StateEstimation/NewFolder/Trajectory.eps
+/Results/StateEstimation/NewFolder/Trajectory.jpg
+/Results/StateEstimation/NewFolder/VelError.eps
+/Results/StateEstimation/NewFolder/Velocity.eps
+/Results/StateEstimation/NewFolder/VelUncertainity.eps
+/Results/StateEstimation/Noise1/PositionTrue.eps
+/Results/StateEstimation/Noise1/TrueVel.eps
+/helperFunctions/DCM.m~
