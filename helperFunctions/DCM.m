@@ -16,11 +16,15 @@ psi = euler_angles(3);
 % hence phi ~ roll, theta ~ pitch, psi ~ yaw.
 
 % expanded form
-R = [ ...
- cos(theta)*cos(psi)                                  cos(theta)*sin(psi)                                -sin(theta);
--cos(phi)*sin(psi) + sin(phi)*sin(theta)*cos(psi)  cos(phi)*cos(psi) + sin(phi)*sin(theta)*sin(psi) sin(phi)*cos(theta)
- sin(phi)*sin(psi) + cos(phi)*sin(theta)*cos(psi) -sin(phi)*cos(psi) + cos(phi)*sin(theta)*sin(psi) cos(phi)*cos(theta)];
+% R = [ ...
+%  cos(theta)*cos(psi)                                  cos(theta)*sin(psi)                                -sin(theta);
+% -cos(phi)*sin(psi) + sin(phi)*sin(theta)*cos(psi)  cos(phi)*cos(psi) + sin(phi)*sin(theta)*sin(psi) sin(phi)*cos(theta)
+%  sin(phi)*sin(psi) + cos(phi)*sin(theta)*cos(psi) -sin(phi)*cos(psi) + cos(phi)*sin(theta)*sin(psi) cos(phi)*cos(theta)];
 
+R = [ ...
+ cos(theta)*cos(psi)                               cos(theta)*sin(psi)                              -sin(theta);
+-cos(phi)*sin(psi) + sin(phi)*sin(theta)*cos(psi)  cos(phi)*cos(psi) + sin(phi)*sin(theta)*sin(psi) sin(psi)*cos(theta)
+ sin(phi)*sin(psi) + sin(phi)*sin(theta)*cos(psi) -sin(phi)*cos(psi) + sin(phi)*sin(theta)*sin(psi) sin(phi)*cos(theta)];
 
 
 end
