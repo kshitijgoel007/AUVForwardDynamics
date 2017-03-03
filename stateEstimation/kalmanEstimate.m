@@ -71,7 +71,7 @@ sigma_apg = sigma_a + sigma_g; %sqrt(sigma_a*sigma_a + sigma_g*sigma_g); % TODO 
 % P = diag(ones(9,1));
 P = diag([0.05,0.05,0.05, 0.05,0.05,0.05, 0.05,0.05,0.05]);
 Q = diag([0,0,0, sigma_g, sigma_g, sigma_g, sigma_apg, sigma_apg, sigma_apg]);
-R = diag([0.5, 0.00087, 0.05]);
+R = diag([0.05, 0.00087, 0.05]);
 
 % Estimated states [ pos, euler_angles, velocity] %
 X_est = zeros(size(X_true));
@@ -80,15 +80,15 @@ yMeas = zeros(3, size(X_true,2));
 e = zeros(3,size(X_true,2));
 
 % Initial conditions
-X_est(7:9,1) = [1,0,0]';
+% X_est(7:9,1) = [1,0,0]';
+X_est(:,1) = X_true(:,1);
 init_state_guess = X_est(:,1);
 P_est(1,:,:) = P;
 
 
 ukf = extendedKalmanFilter(@propagateNavState,... % State transition function
                            @getSensorData,... % Measurement function
-                           init_state_guess, ...
-                           'HasAdditiveMeasurementNoise', true);
+                           init_state_guess);
 ukf.MeasurementNoise = R;
 ukf.ProcessNoise = Q;
 
@@ -254,12 +254,85 @@ ylabel('Error for state v_{z}');
 legend('State estimate','1-sigma uncertainty bound',...
     'Location','Best');
 
+
+
 figure
 plot3(position_in(1,:),position_in(2,:),position_in(3,:));
 hold on
 x = X_est(1:3,:);
 plot3(x(1,:),x(2,:),x(3,:));
 hold off;
+
+%{
+[xe,xeLags] = xcorr(e,'coeff'); % 'coeff': normalize by the value at zero lag
+% Only plot non-negative lags
+idx = xeLags>=0;
+figure();
+plot(xeLags(idx),xe(idx));
+xlabel('Lags');
+ylabel('Normalized correlation');
+title('Auto-correlation of residuals (innovation)');
+
+mean(eStates)
+[xeStates1,xeStatesLags1] = xcorr(eStates(:,1),'coeff'); % 'coeff': normalize by the value at zero lag
+[xeStates2,xeStatesLags2] = xcorr(eStates(:,2),'coeff'); % 'coeff'
+[xeStates3,xeStatesLags3] = xcorr(eStates(:,3),'coeff'); % 'coeff'
+[xeStates4,xeStatesLags4] = xcorr(eStates(:,4),'coeff'); % 'coeff'
+[xeStates5,xeStatesLags5] = xcorr(eStates(:,5),'coeff'); % 'coeff'
+[xeStates6,xeStatesLags6] = xcorr(eStates(:,6),'coeff'); % 'coeff'
+[xeStates7,xeStatesLags7] = xcorr(eStates(:,7),'coeff'); % 'coeff'
+[xeStates8,xeStatesLags8] = xcorr(eStates(:,8),'coeff'); % 'coeff'
+[xeStates9,xeStatesLags9] = xcorr(eStates(:,9),'coeff'); % 'coeff'
+
+
+% Only plot non-negative lags
+idx = xeStatesLags1>=0;
+figure();
+subplot(3,1,1);
+plot(xeStatesLags1(idx),xeStates1(idx));
+xlabel('Lags');
+ylabel('For state 1');
+title('Normalized auto-correlation of state estimation error');
+subplot(3,1,2);
+plot(xeStatesLags2(idx),xeStates2(idx));
+xlabel('Lags');
+ylabel('For state 2');
+subplot(3,1,3);
+plot(xeStatesLags3(idx),xeStates2(idx));
+xlabel('Lags');
+ylabel('For state 3');
+
+idx = xeStatesLags4>=0;
+figure();
+subplot(3,1,1);
+plot(xeStatesLags4(idx),xeStates4(idx));
+xlabel('Lags');
+ylabel('For state 4');
+title('Normalized auto-correlation of state estimation error');
+subplot(3,1,2);
+plot(xeStatesLags5(idx),xeStates5(idx));
+xlabel('Lags');
+ylabel('For state 5');
+subplot(3,1,3);
+plot(xeStatesLags6(idx),xeStates6(idx));
+xlabel('Lags');
+ylabel('For state 6');
+
+idx = xeStatesLags7>=0;
+figure();
+subplot(3,1,1);
+plot(xeStatesLags7(idx),xeStates7(idx));
+xlabel('Lags');
+ylabel('For state 7');
+title('Normalized auto-correlation of state estimation error');
+subplot(3,1,2);
+plot(xeStatesLags8(idx),xeStates8(idx));
+xlabel('Lags');
+ylabel('For state 8');
+subplot(3,1,3);
+plot(xeStatesLags9(idx),xeStates9(idx));
+xlabel('Lags');
+ylabel('For state 9');
 
 % figure
 % plot(t,r_dot);
