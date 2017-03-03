@@ -5,11 +5,18 @@ Ref : http://docs.sympy.org/dev/modules/physics/vector/api/classes.html
 
 from sympy.physics.mechanics import *
 from sympy import symbols
+from sympy import simplify
+from sympy import Matrix
+import numpy as np
+from sympy.solvers import solve
 from sympy.physics.vector import init_vprinting
+from sympy.physics.vector import vlatex, vpprint, vprint
+from sympy.physics.vector import kinematic_equations
+# from sympy import subs
 from sympy import init_printing
 
-init_vprinting(use_latex='mathjax', pretty_print=True)
-init_printing(use_latex='mathjax', pretty_print=True)
+init_vprinting(use_latex='mathjax', pretty_print=True, use_unicode=True)
+init_printing(use_latex='mathjax', pretty_print=True, use_unicode=True)
 
 print 'Calculation of kinematic model for state estimation with states X, Y, Z, Roll, Pitch, Yaw, Vx, Vy, Vz \n'
 
@@ -22,24 +29,11 @@ T : tanget frame or NED frame
 B : Body frame
 IMU : IMU frame
 DVL : DVL frame
-
-B1 and B2 are intermediate frames such that, B -> B2 -> B1 -> B
-IMU1 and IMU2 are intermediate frames such that, B -> IMU2 -> IMU1 -> IMU
-DVL1 and DVL2 are intermediate frames such that, B -> DVL2 -> DVL1 -> DVL
 '''
 N = ReferenceFrame('N')
 T = ReferenceFrame('T')
-
-B2 = ReferenceFrame('B2')
-B1 = ReferenceFrame('B1')
 B  = ReferenceFrame('B')
-
-IMU1 = ReferenceFrame('IMU2')
-IMU2 = ReferenceFrame('IMU1')
 IMU  = ReferenceFrame('IMU')
-
-DVL2 = ReferenceFrame('DVL2')
-DVL1 = ReferenceFrame('DVL1')
 DVL  = ReferenceFrame('DVL')
 
 '''
@@ -52,7 +46,7 @@ x, y, z are location of bo, c.g of AUV.
 
 psi, theta, phi, x, y, z = dynamicsymbols(' psi theta phi x y z')
 psi_d, theta_d, phi_d, x_d, y_d, z_d = dynamicsymbols('psi theta phi x y z', 1)
-u1, u2, u3, u4, u5, u6 = dynamicsymbols('u1:7')
+p, q, r, u, v, w = dynamicsymbols('p q r u v w') # Body rates and velocities
 
 '''
 constants and Parameters
@@ -68,6 +62,7 @@ l_DVL_x, l_DVL_y, l_DVL_z : describes postion of IMU w.r.t bo
 ## constant euler angles
 psi_IMU, theta_IMU, phi_IMU = symbols(' psi_IMU theta_IMU phi_IMU')
 psi_DVL, theta_DVL, phi_DVL = symbols(' psi_DVL theta_DVL phi_DVL')
+t = symbols('t')
 
 ## location of IMU and DVL from b0
 l_IMU_x, l_IMU_y, l_IMU_z = symbols('l_IMU_x l_IMU_y l_IMU_z')
@@ -77,24 +72,10 @@ l_DVL_x, l_DVL_y, l_DVL_z = symbols('l_DVL_x l_DVL_y l_DVL_z')
 Orientation of Reference Frames
 '''
 
-# T -> B2 -> B1 -> B
-B2 = T.orientnew('B2', 'Axis', [psi, T.z])
-B1 = B2.orientnew('B1', 'Axis', [theta, B2.y])
-B = B1.orientnew('B', 'Axis', [phi, B1.x]) # Body frame
-
-# print B.dcm(T)
-
-# B.orient(T, 'Body', [psi, theta, phi], '321')
-
-# B -> IMU2 -> IMU1 -> IMU
-IMU2 = B.orientnew('IMU2', 'Axis', [psi_IMU, B.z])
-IMU1 = IMU2.orientnew('IMU1', 'Axis', [theta_IMU, IMU2.y])
-IMU  = IMU1.orientnew('IMU', 'Axis', [phi_IMU, IMU1.x]) # IMU frame
-
-# B -> DVL2 -> DVL1 -> DVL
-DVL2 = B.orientnew('DVL2', 'Axis', [psi_DVL, B.z])
-DVL1 = DVL2.orientnew('DVL1', 'Axis', [theta_DVL, DVL2.y])
-DVL  = DVL1.orientnew('DVL', 'Axis', [phi_DVL, DVL1.x]) # DVL frame
+B.orient(T, 'Body', [psi, theta, phi], '321')
+IMU.orient(B, 'Body', [psi_IMU, theta_IMU, phi_IMU], '321')
+DVL.orient(B, 'Body', [psi_DVL, theta_DVL, phi_DVL], '321')
+# print vpprint(IMU.dcm(B))
 
 '''
 Position vectors
@@ -119,32 +100,21 @@ io.set_pos(bo, l_IMU_x*B.x + l_IMU_y*B.y + l_IMU_z*B.z)
 do.set_pos(bo, l_DVL_x*B.x + l_DVL_y*B.y + l_DVL_z*B.z)
 
 '''
-Kinematic diff. Equations
-'''
-kinematical = [psi_d - u1,
-               theta_d - u2,
-               phi_d - u3,
-               x_d - u4,
-               y_d - u5,
-               z_d - u6]
-'''
 Angular velocities
 '''
-B2.set_ang_vel(T, psi*T.z)
-B1.set_ang_vel(B2, theta*B2.y)
-B.set_ang_vel(B1, phi*B1.x)
 
-DVL2.set_ang_vel(B, 0*B.z)
-DVL1.set_ang_vel(DVL2, 0*DVL2.y)
-DVL.set_ang_vel(DVL1, 0*DVL1.x)
-
-IMU2.set_ang_vel(B, 0*B.z)
-IMU1.set_ang_vel(IMU2, 0*IMU2.y)
-IMU.set_ang_vel(IMU1, 0*IMU1.x)
+# kinematic Differential equation
+kde = kinematic_equations([p, q, r], [psi, theta, phi], 'body', '321')
+# dq_dict = solve(kde, [p, q, r], set=True)
+# B.set_ang_vel(T,.subs(dq_dict))
+# print B.ang_vel_in(T)
+DVL.set_ang_vel(B, 0*B.x)
+IMU.set_ang_vel(B, 0*B.x)
 
 '''
 Setup linear velocities
 '''
+
 
 # origin is fixed
 to.set_vel(T, 0)
@@ -153,33 +123,24 @@ to.set_vel(T, 0)
 bo.set_vel(T, bo.pos_from(to).dt(T))
 io.v2pt_theory(bo, T, IMU)
 do.v2pt_theory(bo, T, DVL)
-# print io.vel(T)
-# print B.ang_vel_in(T)
+# print B.dcm(T)
+print "\n ..... hello ...... \n"
+
+print bo.pos_from(to).express(B).diff(t, B)
+print vpprint(bo.pos_from(to).express(B).diff(t, T).to_matrix(B))
+
+# print bo.pos_from(to)*B.dcm(T)
+# print vprint(bo.pos_from(to).express(B))
+# print B.partial_velocity(T, phi_d, psi_d, theta_d)
+
+'''
+setup acceleration
+'''
+bo.set_acc(T, bo.vel(T).dt(T))
+io.a2pt_theory(bo, T, IMU)
+do.a2pt_theory(bo, T, DVL)
+
+# print io.partial_velocity(T, )
+# print io.pos_from(to).express(T)
+# print B.partial_velocity(T, x_d, y_d, z_d, phi_d, theta_d, psi_d)
 # print express(IMU.ang_vel_in(T), T)
-
-'''
-Constants
-'''
-## Define constants and variables TODO : include g
-constants = [
-             psi_IMU,
-             theta_IMU,
-             phi_IMU,
-             psi_DVL,
-             theta_DVL,
-             phi_DVL,
-             l_IMU_x,
-             l_IMU_y,
-             l_IMU_z,
-             l_DVL_x,
-             l_DVL_y,
-             l_DVL_z]
-# coordinates = [psi, theta, phi, x, y, z]
-# speeds = [psi_d, theta_d, phi_d, x_d, y_d, z_d]
-
-# print B0.pos_from(T0)
-# print B0.pos_from(T0).express(B)
-
-# print IMU.dcm(B)
-# print T.dcm(B)
-# print T.dcm(B)
