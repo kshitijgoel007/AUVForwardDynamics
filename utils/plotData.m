@@ -1,5 +1,5 @@
  function plotData(Y,caseNo)
-    
+    r2d = 180/pi;
   
 %  
    figure(1);

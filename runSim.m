@@ -18,6 +18,8 @@
 % CASE 12: TURNINGDEL_R_ORDERED = -15 DEGREE, 
 % CASE 13: VERTICAL ZIG-ZAG MOTION: DEL_ST_ORDERED = 20DEGREE INITIALLY,
 % CASE 14: VERTICAL ZIG-ZAG MOTION: DEL_ST_ORDERED = -20 DEGREE INITIALLY
+% CASE 16: Roll heel angle simulation. Adjust roll_heel in forwarddyanics2.m
+% CASE 16: Pitch heel angle simulation. Adjust pitch_heel in forwarddyanics2.m
 
 % INPUT : An integer specifying case number to be run and timespan 
 %         
