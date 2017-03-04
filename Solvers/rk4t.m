@@ -1,6 +1,6 @@
-function Y = rk4t(F,tspan,y0,ord_defl,caseNo)
-
+function [Y, X_estimate, P_estimate] = rk4t(F,tspan,y0,ord_defl,caseNo)
 h = diff(tspan);
+global tinc;
 % y0 = y0(:);   % Make a column vector.
 nrows = length(y0);
 N = length(tspan);
@@ -11,8 +11,8 @@ Y(1:18,1) = y0;
 
 % initialising disturbance function
 D = zeros(length(y0),1);
- 
-
+X_estimate(1,:) = zeros(9,1);
+P_estimate(1,:,:) = zeros(9,9);
 %*********************SOLVING******************************************
 
 for i = 2:N
@@ -101,11 +101,11 @@ for i = 2:N
   %includ acc terms
   c = length(Y(1:18,i));
   Y(c+1:c+6)= K(1:6,1);
-  
+   
+  [X_estimate(i,:), P_estimate(1,:,:)] = stateEstimation(Y', tinc);  
 end
-
-
 Y = Y.';
+ 
 buffer(:,1) = tspan;
 for iter=1:nrows+6%Column
     for j=1:N%Rows
