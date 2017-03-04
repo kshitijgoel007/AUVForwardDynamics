@@ -1,5 +1,5 @@
 
-  function Y=callSolver(caseNo,timespan,X,sCheck)
+  function [Y, X_estimate, P_estimate]=callSolver(caseNo,timespan,X,sCheck)
 
 % Function for solving 6DOF equations using rk 4th order/euler method
 %
@@ -20,7 +20,7 @@
 addpath('actuator dynamics');
 addpath('utils');
 addpath('PDcontrol');
-
+addpath('stateEstimation');
 
 
 % Mat file containing properties of bot
@@ -29,7 +29,8 @@ addpath('PDcontrol');
 
 % Initialising output vector 
 Y=zeros(length(timespan),length(X)+1);
-
+X_estimate = zeros(length(timespan),9);
+P_estimate = zeros(length(timespan),9,9);
   
   
 % Initialising ordered control surface deflections array
@@ -107,7 +108,7 @@ end % end of switch
 % solving..
 
 if sCheck==1
-    Y=rk4t(@forwarddynamics2,timespan,X,ord_defl,caseNo);
+    [Y, X_estimate, P_estimate]=rk4t(@forwarddynamics2,timespan,X,ord_defl,caseNo);
 elseif sCheck==0
     Y = eulerFirstOrder(@forwarddynamics2,timespan,X, ord_defl,caseNo);
 end 

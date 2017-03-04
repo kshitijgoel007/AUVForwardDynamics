@@ -8,10 +8,10 @@ clear all;
 close all;
 
 %% setup
-addpath(genpath('datapoints'));
-addpath(genpath('sensorModels'));
-addpath(genpath('helperFunctions'));
-addpath(genpath('ukf'));
+addpath('../datapoints');
+addpath('../sensorModels');
+addpath('../helperFunctions');
+addpath('../ukf');
 
 %% load auv parameters as global params.
 s = load('datapoints.mat');
