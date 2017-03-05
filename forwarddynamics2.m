@@ -129,9 +129,10 @@ if n ==0||u==0,  eta =0;
 else eta = 0.012*n/u; end
 Cd0 = 0.00385;
 C_t = (0.008*L^2)*eta*abs(eta)/2.0;
+C_t1 = 0.008*L^2/2.0;
 Xprop = Cd0*(eta*abs(eta) - 1);
 if n==0||u==0 ,temp =0; temp1 = 0;
-else temp = sign(n)/sign(u); temp1 = (sqrt(C_t + 1) - 1)/(sqrt(C_t + 1) - 1);end
+else temp = sign(n)/sign(u); temp1 = (sqrt(C_t + 1) - 1)/(sqrt(C_t1 + 1) - 1);end
 epsilon = -1+(temp)*temp1;
 
 % DRAG TERM
@@ -140,7 +141,7 @@ epsilon = -1+(temp)*temp1;
 % Cd= -.075/[(log10(Re)-2)^2];
 % Total_surface_area=12.5;%sq.m %as calculated from solidworks model
 % drag=.5*rho*Total_surface_area*u*u*Cd;
-drag_sim_ansys = -(30.4732*u*u+11.3196*u);
+%drag_sim_ansys = -(30.4732*u*u+11.3196*u);
 
 
 % INCLUDING THE INTEGRATION TERMS
@@ -154,7 +155,7 @@ drag_sim_ansys = -(30.4732*u*u+11.3196*u);
      surge_deriv(12)*u*r*Del_r) + (0.5*rho*(L^2))*(surge_deriv(12)*v*v + surge_deriv(13)*w*w + surge_deriv(14)*u*v*Del_r + ...
      u*w*(surge_deriv(15)*Del_s + surge_deriv(16)*Del_bs + surge_deriv(16)*Del_bp) + u*u*(surge_deriv(17)*Del_s^2 + surge_deriv(18)*Del_delb^2 ...
      + surge_deriv(19)*Del_r^2)) - ((W-B)*sin(theta)) + (0.5*rho*L^3)*(surge_deriv(20)*u*q*Del_s*epsilon) ...
-     + (0.5*rho*L^2)*(surge_deriv(21)*u*w*Del_s + surge_deriv(22)*u*u*Del_s^2)*epsilon + (0.5*rho*L^2)*((u^2)*Xprop))+drag_sim_ansys;
+     + (0.5*rho*L^2)*(surge_deriv(21)*u*w*Del_s + surge_deriv(22)*u*u*Del_s^2)*epsilon + (0.5*rho*L^2)*((u^2)*Xprop));%+drag_sim_ansys;
     
     (m*(-u*r + w*p - xg*p*q + yg*(p^2 + r^2) - zg*q*r) + (0.5*rho*L^4)*(sway_deriv(3)*p*q + sway_deriv(4)*q*r) + (0.5*rho*L^3)* ...
     (sway_deriv(6)*u*p + sway_deriv(7)*u*r + sway_deriv(8)*v*q + sway_deriv(9)*w*p + sway_deriv(10)*w*r) + (0.5*rho*L^2)*(sway_deriv(11)*u*v ...
