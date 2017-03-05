@@ -18,10 +18,10 @@
 %    subplot(3,1,2);plot(Y(:,1),Y(:,11)*r2d);xlabel('time');ylabel('\phi');
 %    subplot(3,1,3);plot(Y(:,1),Y(:,13)*r2d);xlabel('time');ylabel('\psi');
 %    
-%    figure(4);
-%    subplot(3,1,1);plot(Y(:,1),Y(:,8)); xlabel('time');ylabel('X');
-%    subplot(3,1,2);plot(Y(:,1),Y(:,9)); xlabel('time');ylabel('Y');
-%    subplot(3,1,3);plot(Y(:,1),Y(:,10)); xlabel('time');ylabel('Z');
+   figure(4);
+   subplot(3,1,1);plot(Y(:,1),Y(:,8)); xlabel('time');ylabel('X');
+   subplot(3,1,2);plot(Y(:,1),Y(:,9)); xlabel('time');ylabel('Y');
+   subplot(3,1,3);plot(Y(:,1),Y(:,10)); xlabel('time');ylabel('Z');
 %    %saveas(figure(3),'E:\AUV\AUVForwardDynamics\Results\vert_zigzag_stern\const_const\xyz', 'eps');
 %    
 %    

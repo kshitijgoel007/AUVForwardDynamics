@@ -38,11 +38,11 @@ function runSimInLoop()
           'n(RPS)','ax(m/s2)','ay(m/s2)','az(m/s2)',...
           'alphax(deg/s2)','alphay(deg/s2)','alphaz(deg/s2)'};
  
-%setting solver to euler
-sCheck =0;
+%setting solver to rk4t
+sCheck =1;
 
 % setting time span
-tspan = 0:.1:1;
+tspan = 0:.1:100;
 
   
 % code for running additional cases
@@ -55,8 +55,8 @@ X(1) = 1;
 
 
 %running simulation
-for i = 10:10
-   caseNo =num2str(i); 
+parfor i = 1:2
+   caseNo = num2str(i); 
     Y=callSolver(caseNo,tspan,X,sCheck);
     
     %SAVING Y VECTOR
