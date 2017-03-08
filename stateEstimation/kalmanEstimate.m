@@ -8,10 +8,10 @@ clear all;
 close all;
 
 %% setup
-addpath('../datapoints');
-addpath('../sensorModels');
-addpath('../helperFunctions');
-addpath('../ukf');
+addpath('datapoints');
+addpath('sensorModels');
+addpath('helperFunctions');
+% addpath('ukf');
 
 %% load auv parameters as global params.
 s = load('datapoints.mat');
@@ -263,6 +263,17 @@ x = X_est(1:3,:);
 plot3(x(1,:),x(2,:),x(3,:));
 hold off;
 
+cd '../AUV/stateEstimation/Noise1'
+saveas(figure(1),'Position.jpg');
+saveas(figure(2),'Euler.jpg');
+saveas(figure(3),'Velocity.jpg');
+saveas(figure(4),'Innovation.jpg');
+saveas(figure(5),'UncertainityPos.jpg');
+saveas(figure(6),'UncertainityEuler.jpg');
+saveas(figure(7),'UncertainityVel.jpg');
+saveas(figure(8),'Trajectory.jpg');
+
+cd '../../../AUVForwardDynamics'
 %{
 [xe,xeLags] = xcorr(e,'coeff'); % 'coeff': normalize by the value at zero lag
 % Only plot non-negative lags
