@@ -20,12 +20,12 @@ global P Q R;
 
 if isempty(ekf)
     init_state_guess = [position_in;
-                euler_angle;
-                vel_bf];
-    P_est(:,:) = P;
+                        euler_angle;
+                        vel_bf];
+    P_est = P;
     ekf = extendedKalmanFilter(@propagateNavState,... % State transition function
-                                @getSensorData,... % Measurement function
-                                init_state_guess);
+                               @getSensorData,... % Measurement function
+                               init_state_guess);
     ekf.MeasurementNoise = R;
     ekf.ProcessNoise = Q;
 end
@@ -44,4 +44,5 @@ end
         end
         % Prediction step
         [X_est,P_est] = predict(ekf, U, tinc);
+        X_est
 end
