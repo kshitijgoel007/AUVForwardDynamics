@@ -11,37 +11,20 @@ close all;
 addpath('datapoints');
 addpath('sensorModels');
 addpath('helperFunctions');
-% addpath('ukf');
 
-%% load auv parameters as global params.
-s = load('datapoints.mat');
-n = fieldnames(s);
-for k = 1:length(n)
-    eval(sprintf('global %s; %s=s.%s;',n{k},n{k},n{k}));
-end
-clear s;
-
-global d_IMU d_DVL;
-d_IMU = [(accelerometer_location(1) -  r_cg(1));
-         (accelerometer_location(2) -  r_cg(2));
-         (accelerometer_location(3) -  r_cg(3))];
-
-d_DVL = [(dvl_location(1) -  r_cg(1));
-         (dvl_location(2) -  r_cg(2));
-         (dvl_location(3) -  r_cg(3))];
+% sensors to use in prediciton step
+PSENSOR = 1;
+DVL = 1;
 
 %% load simulation parameters & data
-
 A = csvread('GoodSensordata30min.csv',1);
 vel_bf = A(:,2:4)'; % m/s
 omega_bf = A(:,5:7)'*pi/180; % rad/s
 position_in = A(:,8:10)'; % m
 euler_angle = A(:,11:13)'*pi/180; % rad
-% accel_bf = A(:,14:16)'; % m/s2
-% omega_bf_dot = A(:,17:19)'; % rad/s2
-
 accel_bf = A(:,20:22)'; % m/s2
 omega_bf_dot = A(:,23:25)'*pi/180; % rad/s2
+
 X_true = [position_in;
           euler_angle;
           vel_bf;];
@@ -51,7 +34,19 @@ t = A(:,1);
 t0 = t(1); tf = t(length(t));
 tinc = t(2) - t(1);
 
-%% Storage of sensor data
+%% load auv parameters as global params. [req. tinc]
+
+IMUparams;
+
+if PSENSOR
+    PSensorparams;
+end
+
+if DVL
+    EKFparams;
+end
+
+%% Storage data matrices
 IMUaccel_bf_meas = zeros(size(accel_bf)); % [accel_meas expressed in sensor frame] of contact point at IMU
 Gyro_omega_bf_meas = zeros(size(omega_bf)); % [omega_meas expressed in sensor frame] of contact point at IMU
 
@@ -63,34 +58,26 @@ g = [0 0 1]'*gravity;
 ac_bias = [0 0 0]';
 omeg_bias = [0 0 0]';
 
-%% UKF parameters
-
-sigma_a = accelerometer_noise_density*(1/sqrt(tinc));
-sigma_g = gyroscope_noise_density*(1/sqrt(tinc));
-sigma_apg = sigma_a + sigma_g; %sqrt(sigma_a*sigma_a + sigma_g*sigma_g); % TODO : Not confirm
-% P = diag(ones(9,1));
-P = diag([0.05,0.05,0.05, 0.05,0.05,0.05, 0.05,0.05,0.05]);
-Q = diag([0,0,0, sigma_g, sigma_g, sigma_g, sigma_apg, sigma_apg, sigma_apg]);
-R = diag([0.05, 0.00087, 0.05]);
+%% KF parameters
 
 % Estimated states [ pos, euler_angles, velocity] %
 X_est = zeros(size(X_true));
 P_est = zeros(size(X_true,2),9,9);
-yMeas = zeros(3, size(X_true,2));
-e = zeros(3,size(X_true,2));
+yDVL = zeros(3, size(X_true,2));
+yPsens = zeros(1, size(X_true,2));
+e = zeros(4,size(X_true,2));
 
 % Initial conditions
-% X_est(7:9,1) = [1,0,0]';
 X_est(:,1) = X_true(:,1);
 init_state_guess = X_est(:,1);
 P_est(1,:,:) = P;
 
 
-ukf = extendedKalmanFilter(@propagateNavState,... % State transition function
+ekf = extendedKalmanFilter(@propagateNavState,... % State transition function
                            @getSensorData,... % Measurement function
                            init_state_guess);
-ukf.MeasurementNoise = R;
-ukf.ProcessNoise = Q;
+ekf.MeasurementNoise = R;
+ekf.ProcessNoise = Q;
 
 %% Loop
 for i = 1:length(t)
@@ -114,24 +101,39 @@ for i = 1:length(t)
           Gyro_omega_bf_meas(:,i)
        ];
 
-   % Get measurement data of DVL
-   yMeas(:,i) = dvl_model(vel_bf(:,i), omega_bf(:,i));
+   % Get measurement data of DVL & Pressure sensor
+   yDVL(1:3,i) = dvl_model(vel_bf(:,i), omega_bf(:,i));
+   yPsens(1,i) = pSensor_model(position_in(3,i));
 
    if (i < length(t))
-        
-        % DVL update available only at 1 HZ
-        if(rem(i,10) == 0)
-                   
-            % Correction step
-            [X_est(:,i+1),P_est(i+1,:,:)] = correct(ukf, yMeas(:,i));
-            
-        end
        
         % Residual in KF
-        e(:,i) = yMeas(:,i) - getSensorData(X_est(:,i));
+        if DVL
+            e(1:3,i) = yDVL(:,i) - getSensorData(X_est(:,i), 1);
+             
+            % DVL update available only at 1 HZ
+            if(rem(i,10) == 0)
+
+                % Correction step
+                [X_est(:,i+1),P_est(i+1,:,:)] = correct(ekf, yDVL(:,i), 1);
+
+            end
+        end
+        
+        if PSENSOR
+            e(4,i) = yPsens(:,i) - getSensorData(X_est(:,i), 2);
+            
+            % Correction 
+            
+            [X_est(:,i+1),P_est(i+1,:,:)] = correct(ekf, yPsens(:,i), 2);
+        end
+        
+        
+
+       
         
         % Prediction step
-        [X_est(:,i+1),P_est(i+1,:,:)] = predict(ukf, U, tinc);
+        [X_est(:,i+1),P_est(i+1,:,:)] = predict(ekf, U, tinc);
 
     end
 
@@ -148,16 +150,26 @@ xlabel('time (sec)');
 ylabel('Position (m)');
 hold off;
 
-
 figure
-plot(t,euler_angle*180/3.14); %atan2(sin(euler_angle), cos(euler_angle))*180/3.14);
+plot(t,euler_angle(1:2,:)*180/3.14); 
 hold on;
-plot(t,X_est(4:6,:)*180/3.14);
-I = legend('$\phi_{true}$','$\theta_{true}$','$\psi_{true}$','$\phi_{est}$','$\theta_{est}$','$\psi_{est}$');
+plot(t,X_est(4:5,:)*180/3.14);
+I = legend('$\phi_{true}$','$\theta_{true}$','$\phi_{est}$','$\theta_{est}$');
 set(I,'interpreter','latex');
 xlabel('time (sec)');
 ylabel('degrees');
 hold off;
+
+figure
+plot(t,euler_angle(3,:)*180/3.14); 
+hold on;
+plot(t,X_est(6,:)*180/3.14);
+I = legend('$\psi_{true}$','$\psi_{est}$');
+set(I,'interpreter','latex');
+xlabel('time (sec)');
+ylabel('degrees');
+hold off;
+
 
 figure
 plot(t,vel_bf);
@@ -170,11 +182,17 @@ hold off;
 
 
 figure
-plot(t,e);
+plot(t,e(1:3,:));
 legend('e_{vx}','e_{vy}','e_{vz}');
 xlabel('time (sec)');
 ylabel('Error in Linear vel.(est - meas) (m/s)');
 hold off;
+
+figure
+plot(t, e(4,:));
+legend('e_{rz}');
+xlabel('time (sec)');
+ylabel('Error in z (m)');
 
 eStates = (X_true - X_est)';
 timeVector = t;
@@ -274,76 +292,76 @@ saveas(figure(7),'UncertainityVel.jpg');
 saveas(figure(8),'Trajectory.jpg');
 
 cd '../../../AUVForwardDynamics'
-%{
-[xe,xeLags] = xcorr(e,'coeff'); % 'coeff': normalize by the value at zero lag
+% %{
+% [xe,xeLags] = xcorr(e,'coeff'); % 'coeff': normalize by the value at zero lag
+% % Only plot non-negative lags
+% idx = xeLags>=0;
+% figure();
+% plot(xeLags(idx),xe(idx));
+% xlabel('Lags');
+% ylabel('Normalized correlation');
+% title('Auto-correlation of residuals (innovation)');
+% 
+% mean(eStates)
+% [xeStates1,xeStatesLags1] = xcorr(eStates(:,1),'coeff'); % 'coeff': normalize by the value at zero lag
+% [xeStates2,xeStatesLags2] = xcorr(eStates(:,2),'coeff'); % 'coeff'
+% [xeStates3,xeStatesLags3] = xcorr(eStates(:,3),'coeff'); % 'coeff'
+% [xeStates4,xeStatesLags4] = xcorr(eStates(:,4),'coeff'); % 'coeff'
+% [xeStates5,xeStatesLags5] = xcorr(eStates(:,5),'coeff'); % 'coeff'
+% [xeStates6,xeStatesLags6] = xcorr(eStates(:,6),'coeff'); % 'coeff'
+% [xeStates7,xeStatesLags7] = xcorr(eStates(:,7),'coeff'); % 'coeff'
+% [xeStates8,xeStatesLags8] = xcorr(eStates(:,8),'coeff'); % 'coeff'
+% [xeStates9,xeStatesLags9] = xcorr(eStates(:,9),'coeff'); % 'coeff'
+
+
 % Only plot non-negative lags
-idx = xeLags>=0;
-figure();
-plot(xeLags(idx),xe(idx));
-xlabel('Lags');
-ylabel('Normalized correlation');
-title('Auto-correlation of residuals (innovation)');
-
-mean(eStates)
-[xeStates1,xeStatesLags1] = xcorr(eStates(:,1),'coeff'); % 'coeff': normalize by the value at zero lag
-[xeStates2,xeStatesLags2] = xcorr(eStates(:,2),'coeff'); % 'coeff'
-[xeStates3,xeStatesLags3] = xcorr(eStates(:,3),'coeff'); % 'coeff'
-[xeStates4,xeStatesLags4] = xcorr(eStates(:,4),'coeff'); % 'coeff'
-[xeStates5,xeStatesLags5] = xcorr(eStates(:,5),'coeff'); % 'coeff'
-[xeStates6,xeStatesLags6] = xcorr(eStates(:,6),'coeff'); % 'coeff'
-[xeStates7,xeStatesLags7] = xcorr(eStates(:,7),'coeff'); % 'coeff'
-[xeStates8,xeStatesLags8] = xcorr(eStates(:,8),'coeff'); % 'coeff'
-[xeStates9,xeStatesLags9] = xcorr(eStates(:,9),'coeff'); % 'coeff'
-
-
-% Only plot non-negative lags
-idx = xeStatesLags1>=0;
-figure();
-subplot(3,1,1);
-plot(xeStatesLags1(idx),xeStates1(idx));
-xlabel('Lags');
-ylabel('For state 1');
-title('Normalized auto-correlation of state estimation error');
-subplot(3,1,2);
-plot(xeStatesLags2(idx),xeStates2(idx));
-xlabel('Lags');
-ylabel('For state 2');
-subplot(3,1,3);
-plot(xeStatesLags3(idx),xeStates2(idx));
-xlabel('Lags');
-ylabel('For state 3');
-
-idx = xeStatesLags4>=0;
-figure();
-subplot(3,1,1);
-plot(xeStatesLags4(idx),xeStates4(idx));
-xlabel('Lags');
-ylabel('For state 4');
-title('Normalized auto-correlation of state estimation error');
-subplot(3,1,2);
-plot(xeStatesLags5(idx),xeStates5(idx));
-xlabel('Lags');
-ylabel('For state 5');
-subplot(3,1,3);
-plot(xeStatesLags6(idx),xeStates6(idx));
-xlabel('Lags');
-ylabel('For state 6');
-
-idx = xeStatesLags7>=0;
-figure();
-subplot(3,1,1);
-plot(xeStatesLags7(idx),xeStates7(idx));
-xlabel('Lags');
-ylabel('For state 7');
-title('Normalized auto-correlation of state estimation error');
-subplot(3,1,2);
-plot(xeStatesLags8(idx),xeStates8(idx));
-xlabel('Lags');
-ylabel('For state 8');
-subplot(3,1,3);
-plot(xeStatesLags9(idx),xeStates9(idx));
-xlabel('Lags');
-ylabel('For state 9');
+% idx = xeStatesLags1>=0;
+% figure();
+% subplot(3,1,1);
+% plot(xeStatesLags1(idx),xeStates1(idx));
+% xlabel('Lags');
+% ylabel('For state 1');
+% title('Normalized auto-correlation of state estimation error');
+% subplot(3,1,2);
+% plot(xeStatesLags2(idx),xeStates2(idx));
+% xlabel('Lags');
+% ylabel('For state 2');
+% subplot(3,1,3);
+% plot(xeStatesLags3(idx),xeStates2(idx));
+% xlabel('Lags');
+% ylabel('For state 3');
+% 
+% idx = xeStatesLags4>=0;
+% figure();
+% subplot(3,1,1);
+% plot(xeStatesLags4(idx),xeStates4(idx));
+% xlabel('Lags');
+% ylabel('For state 4');
+% title('Normalized auto-correlation of state estimation error');
+% subplot(3,1,2);
+% plot(xeStatesLags5(idx),xeStates5(idx));
+% xlabel('Lags');
+% ylabel('For state 5');
+% subplot(3,1,3);
+% plot(xeStatesLags6(idx),xeStates6(idx));
+% xlabel('Lags');
+% ylabel('For state 6');
+% 
+% idx = xeStatesLags7>=0;
+% figure();
+% subplot(3,1,1);
+% plot(xeStatesLags7(idx),xeStates7(idx));
+% xlabel('Lags');
+% ylabel('For state 7');
+% title('Normalized auto-correlation of state estimation error');
+% subplot(3,1,2);
+% plot(xeStatesLags8(idx),xeStates8(idx));
+% xlabel('Lags');
+% ylabel('For state 8');
+% subplot(3,1,3);
+% plot(xeStatesLags9(idx),xeStates9(idx));
+% xlabel('Lags');
+% ylabel('For state 9');
 
 % figure
 % plot(t,r_dot);
