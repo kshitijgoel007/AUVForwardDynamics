@@ -13,7 +13,7 @@ addpath('sensorModels');
 addpath('helperFunctions');
 
 % sensors to use in prediciton step
-PSENSOR = 1;
+PSENSOR = 0;
 DVL = 1;
 
 %% load simulation parameters & data
