@@ -1,6 +1,7 @@
 function [Y, X_estimate, P_estimate] = rk4t(F,tspan,y0,ord_defl,caseNo)
 h = diff(tspan);
 global tinc;
+
 % y0 = y0(:);   % Make a column vector.
 nrows = length(y0);
 N = length(tspan);
@@ -102,7 +103,8 @@ for i = 2:N
   c = length(Y(1:18,i));
   Y(c+1:c+6)= K(1:6,1);
    
-  [X_estimate(i,:), P_estimate(1,:,:)] = stateEstimation(Y', tinc);  
+  [X_estimate(i,:), P_estimate(i,:,:)] = stateEstimation(Y', tinc);  
+%   X_estimate(i,:)
 end
 Y = Y.';
  

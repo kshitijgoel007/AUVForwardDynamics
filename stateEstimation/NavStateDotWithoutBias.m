@@ -17,12 +17,14 @@ function [ x_dot ] = NavStateDotWithoutBias( X , U, tinc)
 global IMU_to_body;
 global gravity;
 global d_IMU;
+global R_i2t;
+global earth_rate;
 persistent prevWb;
+persistent wb_dot;
 
-% earth_rate_mat = skew(R_i2t*earth_rate); % earth_rate in tangent frame.
-% R_t2I = IMU_to_body'*DCM(X(4:6)); % DOUBT : it is R_itoI ?
+earth_rate_t = R_i2t*earth_rate; % earth_rate in tangent frame.
 
-g_cap = [0 0 1]'*gravity; % TODO : change gravity - earth_rate_mat*earth_rate_mat*X(1:3); % earth gravity in tangent frame.
+g_cap = [0 0 1]'*gravity;
 R_t2b = DCM(X(4:6));
 x_dot = zeros(9,1);
 
@@ -30,19 +32,26 @@ wb = IMU_to_body*U(4:6); % Body rate
 
 if isempty(prevWb)
     prevWb = wb;
+    wb_dot = [0 0 0]';
 end
-wb_dot = (wb - prevWb)/tinc;
+
+if(~isequal(wb, prevWb))
+    wb_dot = (wb - prevWb)/tinc;
+end
+
 prevWb = wb;
 
 % dot{r_{b/t}^{t}} %
-x_dot(1:3) = R_t2b' * X(7:9); 
+x_dot(1:3) = R_t2b' * X(7:9);
 
 % theta %
 x_dot(4:6) = euler_to_bodyRates(X(4:6), -1) * wb; % - R_t2I*(R_i2t*earth_rate));
 
 % dot{v_{b/t}^{b}} %
 x_dot(7:9) = IMU_to_body*U(1:3) + R_t2b*g_cap ...
+             - cross(wb_dot, d_IMU) ...
              - cross(wb, cross(wb, d_IMU)) ...
-             ; %- cross(wb_dot, d_IMU);
-             % - cross(U(4:6), X(7:9))  - R_t2I*earth_rate_mat*R_t2I*X(7:9)  
+             - R_t2b*cross(earth_rate_t, R_t2b'*X(7:9)) ...
+             - cross(wb, X(7:9)) ...
+             - R_t2b*cross(earth_rate_t, cross(earth_rate_t, X(1:3) ) );
 end

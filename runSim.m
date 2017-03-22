@@ -59,7 +59,8 @@
 global tinc;
 tinc = 0.1;
 X = init_state();
-IMUparams;
+
+AUVsensors;
 EKFparams;
 
 
