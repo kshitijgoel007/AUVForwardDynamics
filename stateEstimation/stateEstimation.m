@@ -4,7 +4,9 @@
 
 
 function [X_est, P_est] = stateEstimation(A, tinc)
-%% TODO : get these params from dynamics
+% Estimated states [ pos, euler_angles, velocity] %
+
+%% Get these params from dynamics
 vel_bf = A(2:4)'; % m/s
 omega_bf = A(5:7)'*pi/180; % rad/s
 position_in = A(8:10)'; % m
@@ -16,7 +18,7 @@ t = A(1);
 %% ekf parameters
 persistent ekf;
 global P Q R;
-% Estimated states [ pos, euler_angles, velocity] %
+global DVL PSENSOR;
 
 if isempty(ekf)
     init_state_guess = [position_in;
@@ -33,16 +35,19 @@ end
    U = getEKFinputs(euler_angle, omega_bf, omega_bf_dot, accel_bf, tinc);
 
    % Get measurement data of DVL
-   yMeas = dvl_model(vel_bf, omega_bf);
+   yDVL = dvl_model(vel_bf, omega_bf);
 
-        % DVL update available only at 1 HZ
-        if(rem(t,10) == 0)
-
-            % Correction step
-            [X_est,P_est] = correct(ekf, yMeas);
-
+        if DVL
+            
+            % DVL update available only at 1 HZ
+            if(rem(t,1) == 0)
+                % Correction step
+                [X_est, P_est] = correct(ekf, yDVL, 1);
+            end
+            
         end
+        
+        
         % Prediction step
-        [X_est,P_est] = predict(ekf, U, tinc);
-        X_est
+        [X_est, P_est] = predict(ekf, U, tinc);
 end

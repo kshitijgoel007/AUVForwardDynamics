@@ -1,6 +1,7 @@
 function [Y, X_estimate, P_estimate] = rk4t(F,tspan,y0,ord_defl,caseNo)
 h = diff(tspan);
 global tinc;
+
 % y0 = y0(:);   % Make a column vector.
 nrows = length(y0);
 N = length(tspan);

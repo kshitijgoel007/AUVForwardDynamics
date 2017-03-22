@@ -31,16 +31,10 @@ X_true = [position_in;
 
 % time parameters
 t = A(:,1);
-t0 = t(1); tf = t(length(t));
 tinc = t(2) - t(1);
 
 %% load auv parameters as global params. [req. tinc]
-
-IMUparams;
-
-if PSENSOR
-    PSensorparams;
-end
+AUVsensors;
 
 if DVL
     EKFparams;
@@ -81,7 +75,7 @@ ekf.ProcessNoise = Q;
 
 %% Loop
 for i = 1:length(t)
-    
+   
    % Get measured acceleration and Angular Vel. in respective sensor frames
    [IMUaccel_bf_meas(:,i), accel_bias(:,i)] = accelerometer_model(DCM(euler_angle(:,i)), ... % R_inertialF_to_bodyF
                                                                   omega_bf(:,i), ...         % Body rates
@@ -100,7 +94,7 @@ for i = 1:length(t)
    U = [  IMUaccel_bf_meas(:,i);
           Gyro_omega_bf_meas(:,i)
        ];
-
+  
    % Get measurement data of DVL & Pressure sensor
    yDVL(1:3,i) = dvl_model(vel_bf(:,i), omega_bf(:,i));
    yPsens(1,i) = pSensor_model(position_in(3,i));
@@ -113,7 +107,7 @@ for i = 1:length(t)
              
             % DVL update available only at 1 HZ
             if(rem(i,10) == 0)
-
+                
                 % Correction step
                 [X_est(:,i+1),P_est(i+1,:,:)] = correct(ekf, yDVL(:,i), 1);
 
@@ -141,157 +135,37 @@ for i = 1:length(t)
 
 end
 
-figure
-plot(t,position_in);
-hold on;
-plot(t,X_est(1:3,:));
-legend('x_{true}','y_{true}','z_{true}','x_{est}','y_{est}','z_{est}');
-xlabel('time (sec)');
-ylabel('Position (m)');
-hold off;
-
-figure
-plot(t,euler_angle(1:2,:)*180/3.14); 
-hold on;
-plot(t,X_est(4:5,:)*180/3.14);
-I = legend('$\phi_{true}$','$\theta_{true}$','$\phi_{est}$','$\theta_{est}$');
-set(I,'interpreter','latex');
-xlabel('time (sec)');
-ylabel('degrees');
-hold off;
-
-figure
-plot(t,euler_angle(3,:)*180/3.14); 
-hold on;
-plot(t,X_est(6,:)*180/3.14);
-I = legend('$\psi_{true}$','$\psi_{est}$');
-set(I,'interpreter','latex');
-xlabel('time (sec)');
-ylabel('degrees');
-hold off;
-
-
-figure
-plot(t,vel_bf);
-hold on;
-plot(t,X_est(7:9,:));
-legend('v_{x true}','v_{y true}','v_{z true}','v_{x est}','v_{y est}','v_{z est}');
-xlabel('time (sec)');
-ylabel('Linear vel. (m/s)');
-hold off;
-
-
-figure
-plot(t,e(1:3,:));
-legend('e_{vx}','e_{vy}','e_{vz}');
-xlabel('time (sec)');
-ylabel('Error in Linear vel.(est - meas) (m/s)');
-hold off;
-
-figure
-plot(t, e(4,:));
-legend('e_{rz}');
-xlabel('time (sec)');
-ylabel('Error in z (m)');
-
 eStates = (X_true - X_est)';
 timeVector = t;
 
-figure();
-subplot(3,1,1);
-plot(timeVector,eStates(:,1),...               % Error for the first state
-    timeVector, sqrt(P_est(:,1,1)),'r', ... % 1-sigma upper-bound
-    timeVector, -sqrt(P_est(:,1,1)),'r');   % 1-sigma lower-bound
-xlabel('Time [s]');
-ylabel('Error for r_{x}');
-title('State estimation errors');
-subplot(3,1,2);
-plot(timeVector,eStates(:,2),...               % Error for the second state
-    timeVector,sqrt(P_est(:,2,2)),'r', ...  % 1-sigma upper-bound
-    timeVector,-sqrt(P_est(:,2,2)),'r');    % 1-sigma lower-bound
-xlabel('Time [s]');
-ylabel('Error for r_{y}');
-legend('State estimate','1-sigma uncertainty bound',...
-    'Location','Best');
-subplot(3,1,3);
-plot(timeVector,eStates(:,3),...               % Error for the third state
-    timeVector,sqrt(P_est(:,3,3)),'r', ...  % 1-sigma upper-bound
-    timeVector,-sqrt(P_est(:,3,3)),'r');    % 1-sigma lower-bound
-xlabel('Time [s]');
-ylabel('Error for state r_{z}');
-legend('State estimate','1-sigma uncertainty bound',...
-    'Location','Best');
+plotStateEstimData(timeVector, X_est, P_est, A);
 
-figure();
-subplot(3,1,1);
-plot(timeVector,eStates(:,4),...               % Error for the fourth state
-    timeVector, sqrt(P_est(:,4,4)),'r', ... % 1-sigma upper-bound
-    timeVector, -sqrt(P_est(:,4,4)),'r');   % 1-sigma lower-bound
-xlabel('Time [s]');
-ylabel('Error for \phi_{x}');
-title('State estimation errors');
-subplot(3,1,2);
-plot(timeVector,eStates(:,5),...               % Error for the fifth state
-    timeVector,sqrt(P_est(:,5,5)),'r', ...  % 1-sigma upper-bound
-    timeVector,-sqrt(P_est(:,5,5)),'r');    % 1-sigma lower-bound
-xlabel('Time [s]');
-ylabel('Error for \theta_{y}');
-legend('State estimate','1-sigma uncertainty bound',...
-    'Location','Best');
-subplot(3,1,3);
-plot(timeVector,eStates(:,6),...               % Error for the sixth state
-    timeVector,sqrt(P_est(:,6,6)),'r', ...  % 1-sigma upper-bound
-    timeVector,-sqrt(P_est(:,6,6)),'r');    % 1-sigma lower-bound
-xlabel('Time [s]');
-ylabel('Error for state \psi_{z}');
-legend('State estimate','1-sigma uncertainty bound',...
-    'Location','Best');
+% figure
+% plot(t,e(1:3,:));
+% legend('e_{vx}','e_{vy}','e_{vz}');
+% xlabel('time (sec)');
+% ylabel('Error in Linear vel.(est - meas) (m/s)');
+% hold off;
 
-figure();
-subplot(3,1,1);
-plot(timeVector,eStates(:,7),...               % Error for the seventh state
-    timeVector, sqrt(P_est(:,7,7)),'r', ... % 1-sigma upper-bound
-    timeVector, -sqrt(P_est(:,7,7)),'r');   % 1-sigma lower-bound
-xlabel('Time [s]');
-ylabel('Error for v_{x}');
-title('State estimation errors');
-subplot(3,1,2);
-plot(timeVector,eStates(:,8),...               % Error for the eith state
-    timeVector,sqrt(P_est(:,8,8)),'r', ...  % 1-sigma upper-bound
-    timeVector,-sqrt(P_est(:,8,8)),'r');    % 1-sigma lower-bound
-xlabel('Time [s]');
-ylabel('Error for v_{y}');
-legend('State estimate','1-sigma uncertainty bound',...
-    'Location','Best');
-subplot(3,1,3);
-plot(timeVector,eStates(:,9),...               % Error for the ninth state
-    timeVector,sqrt(P_est(:,9,9)),'r', ...  % 1-sigma upper-bound
-    timeVector,-sqrt(P_est(:,9,9)),'r');    % 1-sigma lower-bound
-xlabel('Time [s]');
-ylabel('Error for state v_{z}');
-legend('State estimate','1-sigma uncertainty bound',...
-    'Location','Best');
+% figure
+% plot(t, e(4,:));
+% legend('e_{rz}');
+% xlabel('time (sec)');
+% ylabel('Error in z (m)');
 
 
-
-figure
-plot3(position_in(1,:),position_in(2,:),position_in(3,:));
-hold on
-x = X_est(1:3,:);
-plot3(x(1,:),x(2,:),x(3,:));
-hold off;
-
-cd '../AUV/stateEstimation/Noise1'
+cd '../AUV/stateEstimation/NoiseCheck'
 saveas(figure(1),'Position.jpg');
 saveas(figure(2),'Euler.jpg');
 saveas(figure(3),'Velocity.jpg');
-saveas(figure(4),'Innovation.jpg');
-saveas(figure(5),'UncertainityPos.jpg');
-saveas(figure(6),'UncertainityEuler.jpg');
-saveas(figure(7),'UncertainityVel.jpg');
-saveas(figure(8),'Trajectory.jpg');
+saveas(figure(4),'UncertainityPos.jpg');
+saveas(figure(5),'UncertainityEuler.jpg');
+saveas(figure(6),'UncertainityVel.jpg');
+saveas(figure(7),'Trajectory.jpg');
+% saveas(figure(4),'Innovation.jpg');
 
 cd '../../../AUVForwardDynamics'
+
 % %{
 % [xe,xeLags] = xcorr(e,'coeff'); % 'coeff': normalize by the value at zero lag
 % % Only plot non-negative lags
@@ -302,7 +176,7 @@ cd '../../../AUVForwardDynamics'
 % ylabel('Normalized correlation');
 % title('Auto-correlation of residuals (innovation)');
 % 
-% mean(eStates)
+mean(eStates)
 % [xeStates1,xeStatesLags1] = xcorr(eStates(:,1),'coeff'); % 'coeff': normalize by the value at zero lag
 % [xeStates2,xeStatesLags2] = xcorr(eStates(:,2),'coeff'); % 'coeff'
 % [xeStates3,xeStatesLags3] = xcorr(eStates(:,3),'coeff'); % 'coeff'
