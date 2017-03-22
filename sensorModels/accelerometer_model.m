@@ -16,8 +16,6 @@ function [a_meas , accelerometer_bias ] = accelerometer_model(R_inertial_to_body
 %  tinc : time step, [IMPORTANT : Depends upon sampling rate in case of actual IMU]
 %  accelerometer_bias : previous value of bias , [b_ax; b_ay; b_az]  [m/s2]
 
-global accelerometer_location;
-global r_cg;
 global accelerometer_bias_instability;
 global IMU_Accelerometer_SF_MA;
 global accelerometer_VRW;
@@ -42,7 +40,7 @@ sigma_GM = sqrt(tinc/accel_corr_time)*accelerometer_bias_instability;
 accelerometer_bias = (1 - tinc/accel_corr_time)*accelerometer_bias + sigma_GM*randn(3,1);
 
 % Accelerometer white noise signal %
-% accelerometer_white_noise = accelerometer_VRW*(1/sqrt(tinc))*randn(3,1);     %  White noise (m/s2)
+% accelerometer_white_noise_d = accelerometer_VRW*(1/sqrt(tinc));     %  White noise (m/s2)
 accelerometer_noise_density_d = accelerometer_noise_density*(1/sqrt(tinc));
 accelerometer_white_noise = accelerometer_noise_density_d*randn(3,1);
 

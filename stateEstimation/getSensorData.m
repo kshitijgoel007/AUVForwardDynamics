@@ -14,8 +14,8 @@ if(sensorId == 1)
     H(7:9,:) = eye(3,3);
     Y = H'*X;
 elseif (sensorId == 2)
-    H = zeros(9,3);
-    H(7:9,:) = eye(3,3);
+    H = zeros(9,1);
+    H(3,3) = 1;
 %     H(3) = 1;
 %     H(3) = density*gravity;
     Y = H'*X; % + Patm;
