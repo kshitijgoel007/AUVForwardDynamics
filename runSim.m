@@ -92,7 +92,7 @@ if(temp~=0)
      dlmwrite(fname1,temp,'-append','precision',4);
      fclose(fid);
 
-    plotStateEstimData(timespan, X_estimate', Y);
+    plotStateEstimData(timespan, X_estimate', P_estimate, Y);
     % Function for bot visualisation
     %  visualiseBot(timespan,Y,caseNo);
 
