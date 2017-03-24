@@ -1,5 +1,5 @@
  function plotData(Y,caseNo)
-    
+    r2d = 180/pi;
   
 %  
    figure(1);
@@ -7,6 +7,7 @@
    subplot(3,1,2);plot(Y(:,1),Y(:,3));xlabel('time');ylabel('v');
    subplot(3,1,3);plot(Y(:,1),Y(:,4));xlabel('time');ylabel('w');
   
+
 %   figure(2);
 %    subplot(3,1,1);plot(Y(:,1),Y(:,5));xlabel('time');ylabel('p');
 %    subplot(3,1,2);plot(Y(:,1),Y(:,6));xlabel('time');ylabel('q');

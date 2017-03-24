@@ -43,7 +43,9 @@
 % function dX = forwarddynamics2(t, X)             
 
 
-function dX = forwarddynamics2(t, X,ord_defl,caseNo,D)              
+
+
+function dX = forwarddynamics2(t, X, ord_defl, caseNo, D)              
 
 
 addpath('actuator dynamics');
@@ -51,7 +53,6 @@ addpath('utils');
 addpath('PDcontrol/divingControl');
 addpath('PDcontrol/heavePitchControl');
 addpath('PDcontrol/steeringControl');
-addpath('PDControl/swayYawControl');
 
 % Files containing bot properties
 geoprop;
@@ -62,6 +63,26 @@ heavederivatives;
 rollderivatives;
 pitchderivatives;
 yawderivatives;
+
+d2r = pi/180;
+
+if strcmp(caseNo,'16')==1
+    %Heel = 2.5*0.1*9.81;
+    phi_heel = 2.5*d2r;
+end
+if strcmp(caseNo,'16')~=1
+    %Heel = 0;
+    phi_heel = 0;
+end
+
+if strcmp(caseNo,'17')==1
+    %Heel = 2.5*0.1*9.81;
+    theta_heel = 2.5*d2r;
+end
+if strcmp(caseNo,'17')~=1
+    %Heel = 0;
+    theta_heel = 0;
+end
 
 
 % (A)(dX)= C
@@ -150,7 +171,7 @@ epsilon = -1+(temp)*temp1;
     ((Iy-Iz)*q*r-Ixy*p*r+Iyz*(q^2-r^2)+Ixz*p*q-m*yg*(v*p-u*q)+m*zg*(u*r-w*p)+(0.5*rho*L^5)*(roll_deriv(3)*p*q+roll_deriv(4)*q*r)...
     +(0.5*rho*L^4)*(roll_deriv(6)*u*p+roll_deriv(7)*u*r+roll_deriv(8)*v*q+roll_deriv(9)*w*p+roll_deriv(10)*w*r)+(0.5*rho*L^3)*(roll_deriv(11)*u*v+...
     roll_deriv(12)*v*w+(u^2)*(roll_deriv(13)*Del_bp+roll_deriv(13)*Del_bs))+(yg*W-y_b*B)*cos(theta)*cos(phi)-(zg*W-z_b*B)*cos(theta)*sin(phi)...
-    +(0.5*L^4)*roll_deriv(14)*u*p*epsilon+(0.5*rho*(L^3)*u^2)*roll_deriv(15));
+    +(0.5*L^4)*roll_deriv(14)*u*p*epsilon+(0.5*rho*(L^3)*u^2)*roll_deriv(15)+ (yg*W-y_b*B)*cos(theta)*cos(phi_heel)-(zg*W-z_b*B)*cos(theta)*sin(phi_heel));%Heel);
 
    
     
@@ -158,7 +179,7 @@ epsilon = -1+(temp)*temp1;
     pitch_deriv(4)*(r^2))+(0.5*rho*(L^4))*(pitch_deriv(6)*u*q+pitch_deriv(7)*v*p+pitch_deriv(8)*v*r)+(0.5*rho*(L^3))*(pitch_deriv(9)*u*w+...
     pitch_deriv(10)*(v^2)+(u^2)*(pitch_deriv(11)*Del_s+pitch_deriv(12)*Del_bp+pitch_deriv(12)*Del_bs)) - ...
     (xg*W - x_b*B)*cos(theta)*cos(phi)-(zg*W - z_b*B)*sin(theta)+0.5*rho*pitch_deriv(13)*q*u*epsilon*(L^4)+(0.5*rho*L^3)*(pitch_deriv(14)*u*w+pitch_deriv(15)...
-    *Del_s*u^2)*epsilon-.5*rho*I(3));
+    *Del_s*u^2)*epsilon-.5*rho*I(3)-(xg*W - x_b*B)*cos(theta_heel)*cos(phi)-(zg*W - z_b*B)*sin(theta_heel));
     
 
     ((Ix-Iy)*p*q + Ixy*(p^2-q^2) + Iyz*p*r - Ixz*q*r - m*(xg*(-w*p+u*r)-(-v*r+w*q)*yg) + (rho*0.5*(L^5))*(yaw_deriv(3)*p*q+yaw_deriv(4)*q*r) + (0.5*rho*L^4)*...
@@ -211,7 +232,7 @@ switch caseNo
     case{'9'}
           dX(16) = rudderDynamicsForSwayYawcontrol(Del_r,psi,r);
     case{'10'}
-        dX(13) = sternDynamicsForPitchHeavecontrol(Del_s,theta,q);
+        dX(13) = sternDynamicsForPitchHeavecontrol(Del_s,theta,q,dX(11));
 
     case{'15'}
            dX(16) = rudderDynamicsForSwayYawcontrol(Del_r,psi,r);
@@ -228,3 +249,4 @@ disp(t);
  
 
 end
+
