@@ -15,7 +15,9 @@ accel_bf = A(20:22)'; % m/s2
 omega_bf_dot = A(23:25)'; % rad/s2
 
 t = A(1);
-disp(t);
+
+format;
+fprintf('t : %2.2f\n',t)
 %% ekf parameters
 persistent ekf;
 global P Q R;

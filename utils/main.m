@@ -25,6 +25,9 @@ X_true = [position_in;
 t = A(:,1);
 tinc = t(2) - t(1);
 
+% Input to state estimation
+a = [t, vel_bf', omega_bf', position_in', euler_angle', A(:,14:19), accel_bf', omega_bf_dot'];
+
 %% load auv parameters as global params. [req. tinc]
 AUVsensors;
 EKFparams;
@@ -35,11 +38,9 @@ P_est = zeros(size(X_true,2),9,9);
 
 %% Loop
 for i = 1:length(t)
-    
-   [X_est(:,i),P_est(i,:,:)] = stateEstimation(A(i,:), tinc);
    
-   fprintf('t : %d \n', i*tinc);
-
+   [X_est(:,i),P_est(i,:,:)] = stateEstimation(a(i,:), tinc);
+   
 end
 
 
