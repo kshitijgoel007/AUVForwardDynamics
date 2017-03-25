@@ -102,7 +102,6 @@ for i = 2:N
   %includ acc terms
   c = length(Y(1:18,i));
   Y(c+1:c+6)= K(1:6,1);
-
   [X_estimate(i,:), P_estimate(i,:,:)] = stateEstimation([ti; Y(:,i)]', tinc);  
 %   X_estimate(i,:)
 end
