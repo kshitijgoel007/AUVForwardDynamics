@@ -38,6 +38,11 @@
   addpath('excel data/u_1m_s');
   addpath('excel data/u_1dot5m_s');
   addpath('excel data/u_2m_s');
+  addpath(genpath('datapoints'));
+  addpath(genpath('sensorModels'));
+  addpath(genpath('helperFunctions'));
+  addpath(genpath('stateEstimation'));
+    
   
   r2d =180/pi;
   lbl = {'t(s)', 'u(m/s)','v(m/s)','w(m/s)',...
@@ -53,8 +58,12 @@
 %% ************* Code for taking input from user**********************
  
 %Initialise state vector X here
-  
+global tinc;
+tinc = 0.1;
 X = init_state();
+
+AUVsensors;
+EKFparams;
 
 
 prompt = 'input case no(input 0 to quit):';
@@ -65,11 +74,13 @@ if(temp~=0)
      
      caseNo=num2str(temp,'%0d') ;
      prompt = 'input simulation time(sec):';
-     endtime = input(prompt);timespan=0:.1:endtime;
+     endtime = input(prompt);timespan=0:tinc:endtime;
      
      prompt = 'euler(0) or rk4(1)?  : ';
      sCheck = input(prompt);
-     Y=callSolver(caseNo,timespan,X,sCheck);
+     [Y,X_estimate, P_estimate] =callSolver(caseNo,timespan,X,sCheck);
+     disp(size(X_estimate));
+     disp(size(Y))
      plotData(Y,caseNo);
      
      % SAVING Y VECTOR
@@ -83,7 +94,7 @@ if(temp~=0)
      dlmwrite(fname1,temp,'-append','precision',4);
      fclose(fid);
 
-
+    plotStateEstimData(timespan, X_estimate', P_estimate, Y);
     % Function for bot visualisation
     %  visualiseBot(timespan,Y,caseNo);
 
