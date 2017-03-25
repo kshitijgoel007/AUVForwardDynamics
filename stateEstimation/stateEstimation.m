@@ -8,13 +8,14 @@ function [X_est, P_est] = stateEstimation(A, tinc)
 
 %% Get these params from dynamics
 vel_bf = A(2:4)'; % m/s
-omega_bf = A(5:7)'*pi/180; % rad/s
+omega_bf = A(5:7)'; % rad/s
 position_in = A(8:10)'; % m
-euler_angle = A(11:13)'*pi/180; % rad
+euler_angle = A(11:13)'; % rad
 accel_bf = A(20:22)'; % m/s2
-omega_bf_dot = A(23:25)'*pi/180; % rad/s2
+omega_bf_dot = A(23:25)'; % rad/s2
 
 t = A(1);
+disp(t);
 %% ekf parameters
 persistent ekf;
 global P Q R;

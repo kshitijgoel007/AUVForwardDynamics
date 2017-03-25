@@ -221,8 +221,6 @@ end
 
 % adding disturbance vector
 dX =dX + D;
-
-disp(t);
 %disp(dX(1));
  
 
