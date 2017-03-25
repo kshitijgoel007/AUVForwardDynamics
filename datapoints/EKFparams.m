@@ -1,3 +1,4 @@
+% Use this after AUVsensors
 global sigma_a sigma_g sigma_apg P Q R tinc DVL PSENSOR
 
 sigma_a = accelerometer_noise_density*(1/sqrt(tinc));

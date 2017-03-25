@@ -42,7 +42,7 @@ xlabel('time (sec)');
 ylabel('degrees');
 hold off;
 
-%{
+
 figure
 plot(t,Y(:,13)); 
 hold on;
@@ -52,7 +52,7 @@ set(I,'interpreter','latex');
 xlabel('time (sec)');
 ylabel('degrees');
 hold off;
-%}
+
 
 % Fig 3
 figure
