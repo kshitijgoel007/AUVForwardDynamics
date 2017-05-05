@@ -197,9 +197,9 @@ u_c0=0;
 v_c0=0;
 w_c0=0;
 
-dX(7)= u_c0+u*cos(psi)*cos(theta)+v*[cos(psi)*sin(theta)*sin(phi)-sin(psi)*cos(phi)]+w*[cos(psi)*sin(theta)*sin(phi)+sin(psi)*sin(phi)];
-dX(8)= v_c0+u*sin(psi)*cos(theta)+v*[sin(psi)*sin(theta)*sin(phi)+cos(psi)*cos(phi)]+w*[sin(psi)*sin(theta)*sin(phi)-cos(psi)*sin(phi)];
-dX(9)= w_c0-u*sin(theta)+v*cos(theta)*sin(psi)+w*cos(theta)*sin(phi);
+dX(7)= u_c0+u*cos(psi)*cos(theta)+v*[cos(psi)*sin(theta)*sin(phi)-sin(psi)*cos(phi)]+w*[cos(psi)*sin(theta)*cos(phi)+sin(psi)*sin(phi)];
+dX(8)= v_c0+u*sin(psi)*cos(theta)+v*[sin(psi)*sin(theta)*sin(phi)+cos(psi)*cos(phi)]+w*[sin(psi)*sin(theta)*cos(phi)-cos(psi)*sin(phi)];
+dX(9)= w_c0-u*sin(theta)+v*cos(theta)*sin(phi)+w*cos(theta)*cos(phi);
 
 dX(10) = p+q*sin(phi)*tan(theta)+r*cos(phi)*tan(theta);
 dX(11) = q*cos(phi)-r*sin(phi);
